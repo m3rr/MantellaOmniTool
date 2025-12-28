@@ -1,0 +1,1988 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>h4 MANTELLA OMNI-TOOL // CODEX GIGA</title>
+    <style>
+        /* --- RESET & BASE --- */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            scrollbar-width: none;
+        }
+
+        ::-webkit-scrollbar {
+            display: none;
+        }
+
+        body {
+            background-color: #020617;
+            /* slate-950 */
+            color: #e2e8f0;
+            /* slate-200 */
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            overflow: hidden;
+            user-select: none;
+        }
+
+        /* --- UTILITIES (Tailwind Mimicry) --- */
+        .flex {
+            display: flex;
+        }
+
+        .flex-col {
+            flex-direction: column;
+        }
+
+        .items-center {
+            align-items: center;
+        }
+
+        .justify-center {
+            justify-content: center;
+        }
+
+        .w-full {
+            width: 100%;
+        }
+
+        .h-screen {
+            height: 100vh;
+        }
+
+        .absolute {
+            position: absolute;
+        }
+
+        .relative {
+            position: relative;
+        }
+
+        .inset-0 {
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+        }
+
+        .z-50 {
+            z-index: 50;
+        }
+
+        .z-10 {
+            z-index: 10;
+        }
+
+        .text-cyan-500 {
+            color: #06b6d4;
+        }
+
+        .text-violet-500 {
+            color: #8b5cf6;
+        }
+
+        .text-slate-500 {
+            color: #64748b;
+        }
+
+        .font-mono {
+            font-family: 'Consolas', monospace;
+        }
+
+        .font-bold {
+            font-weight: 700;
+        }
+
+        .transition-all {
+            transition: all 0.3s ease;
+        }
+
+        /* --- ANIMATIONS --- */
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        .animate-pulse {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        @keyframes scanline {
+            0% {
+                transform: translateY(-100%);
+            }
+
+            100% {
+                transform: translateY(100%);
+            }
+        }
+
+        .scanline::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to bottom, transparent 50%, rgba(0, 255, 255, 0.02) 51%, transparent 51%);
+            background-size: 100% 4px;
+            pointer-events: none;
+            z-index: 99;
+        }
+
+        /* --- LAYOUT --- */
+        #app {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* SIDEBAR */
+        #sidebar {
+            width: 64px;
+            /* w-16 */
+            background: rgba(2, 6, 23, 0.9);
+            border-right: 1px solid #1e293b;
+            display: flex;
+            flex-direction: column;
+            transition: width 0.3s ease;
+            z-index: 40;
+            backdrop-filter: blur(8px);
+        }
+
+        #sidebar:hover {
+            width: 260px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            color: #64748b;
+            cursor: pointer;
+            border-left: 2px solid transparent;
+            transition: all 0.2s;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        .nav-item:hover {
+            color: #cbd5e1;
+            background: rgba(30, 41, 59, 0.5);
+        }
+
+        .nav-item.active {
+            color: #cffafe;
+            /* cyan-100 */
+            background: rgba(6, 182, 212, 0.1);
+            border-left-color: #06b6d4;
+            box-shadow: 0 0 15px rgba(34, 211, 238, 0.2);
+        }
+
+        .nav-icon {
+            min-width: 24px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .nav-text {
+            margin-left: 16px;
+            opacity: 0;
+            transition: opacity 0.2s 0.1s;
+            /* Delay text appearance */
+        }
+
+        #sidebar:hover .nav-text {
+            opacity: 1;
+        }
+
+        /* MAIN */
+        #main-content {
+            flex: 1;
+            padding: 40px;
+            overflow-y: auto;
+            scroll-behavior: smooth;
+        }
+
+        section {
+            margin-bottom: 100px;
+            opacity: 0.4;
+            transition: opacity 0.5s;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        section.active-section {
+            opacity: 1;
+        }
+
+        h1 {
+            font-size: 4rem;
+            background: linear-gradient(to right, #22d3ee, #8b5cf6);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: -2px;
+        }
+
+        h2 {
+            font-size: 2rem;
+            color: #f1f5f9;
+            margin-bottom: 20px;
+            font-family: 'Consolas', monospace;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        h3 {
+            color: #a5b4fc;
+            font-family: 'Consolas', monospace;
+            margin-top: 20px;
+            margin-bottom: 8px;
+            font-size: 1.25rem;
+        }
+
+        p,
+        li {
+            line-height: 1.6;
+            color: #cbd5e1;
+            margin-bottom: 12px;
+        }
+
+        strong {
+            color: white;
+        }
+
+        code {
+            background: #1e293b;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #38bdf8;
+            font-family: 'Consolas', monospace;
+            font-size: 0.9em;
+        }
+
+        .card {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid #1e293b;
+            padding: 24px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .card:hover {
+            border-color: #8b5cf6;
+        }
+
+        /* --- CRT OVERLAY --- */
+        #crt-overlay {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            background-size: 100% 4px, 3px 100%;
+            z-index: 100;
+            opacity: 0.6;
+        }
+
+        /* --- ICONS (SVG) --- */
+        svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* --- WHITEPAPER STYLING --- */
+        .whitepaper-content {
+            padding: 24px;
+            background-color: rgba(30, 41, 59, 0.4);
+            /* slate-800 with opacity */
+            border: 1px solid #1e293b;
+            /* slate-800 */
+            border-radius: 8px;
+            color: #cbd5e1;
+            /* slate-300 */
+            line-height: 1.7;
+        }
+
+        .whitepaper-content h1 {
+            color: #22d3ee;
+            /* cyan-400 */
+            border-bottom: 2px solid #1e293b;
+            padding-bottom: 15px;
+            margin-top: 10px;
+        }
+
+        .whitepaper-content h2 {
+            color: #8b5cf6;
+            /* violet-500 */
+            margin-top: 40px;
+            margin-bottom: 20px;
+            font-family: 'Consolas', monospace;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 1px solid #1e293b;
+            padding-bottom: 5px;
+        }
+
+        .whitepaper-content h3 {
+            color: #38bdf8;
+            /* sky-400 */
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+
+        .whitepaper-content p {
+            margin-bottom: 15px;
+        }
+
+        .whitepaper-content ul {
+            margin-left: 20px;
+            margin-bottom: 20px;
+        }
+
+        .whitepaper-content li {
+            margin-bottom: 6px;
+        }
+
+        .whitepaper-content hr {
+            border: 0;
+            border-top: 1px solid #334155;
+            margin: 40px 0;
+        }
+    </style>
+</head>
+
+<body class="scanline">
+
+    <!-- CRT EFFECT -->
+    <div id="crt-overlay"></div>
+
+    <div id="app">
+        <!-- SIDEBAR -->
+        <nav id="sidebar">
+            <div style="padding: 20px; display: flex; align-items: center; gap: 12px;">
+                <div
+                    style="min-width: 32px; height: 32px; background: linear-gradient(135deg, #06b6d4, #8b5cf6); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-weight: bold; color: black; font-family: monospace;">
+                    h4</div>
+                <span class="nav-text font-mono font-bold text-cyan-500">CODEX</span>
+            </div>
+
+            <div id="nav-items" style="flex: 1; overflow-y: auto; padding-right: 4px; border-top: 1px solid #1e293b;">
+                <!-- Nav Items Injected by JS -->
+            </div>
+
+            <!-- Status Footer -->
+            <div style="padding: 20px; border-top: 1px solid #1e293b;">
+                <div class="nav-text text-xs text-slate-500 font-mono flex items-center justify-between">
+                    <div>
+                        <span class="inline-block w-2 h-2 bg-emerald-500 rounded-full mr-1 animate-pulse"></span>
+                        ONLINE
+                    </div>
+                    <div class="text-[10px] opacity-50">v1.1</div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- MAIN CONTENT -->
+        <main id="main-content" class="relative">
+            <!-- Scanline overlay specific to content -->
+            <div class="pointer-events-none absolute inset-0 bg-gradient-to-b from-transparent to-black/5 z-10"></div>
+            <!-- Content Injected by JS -->
+        </main>
+    </div>
+
+    <!-- CORE SCRIPT -->
+    <script>
+        // --- DATA ---
+        const CONTENT = [
+            {
+                id: "INIT",
+                title: "00_INIT",
+                icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>`,
+                subtitle: "Philosophy & Genesis",
+                html: `
+                    <h1 class="animate-pulse">h4 MANTELLA OMNI-TOOL</h1>
+                    <div class="font-mono text-slate-500 mb-8">v1.0b // SENTIENT MIDDLEWARE</div>
+                    
+                    <div class="card" style="border-left: 4px solid #8b5cf6;">
+                        <p class="italic text-lg">"Because giving NPCs a soul shouldn't require a degree. But we used one to build this anyway."</p>
+                    </div>
+
+                    <h3>PROTOCOL: PLAY OVER ENGINEER</h3>
+                    <p>Listen. You want to talk to Skyrim NPCs. You want them to talk back. You saw a video on YouTube and thought "that looks cool," but then you saw the installation instructions involved Python, coding, ports, and tears. You almost clicked away.</p>
+                    <p><strong>Don't panic. That is why I built this.</strong> This tool is your easy button. Normally, getting AI to talk to Skyrim is like trying to teach a cat calculus. The game is old. The AI is new. They hate each other. This tool forces them to get along.</p>
+                    
+                    <h3>CORE DOCTRINE</h3>
+                    <ul>
+                        <li><strong class="text-cyan-500">Atomic Integrity:</strong> The tool prefers to crash safely rather than corrupt your game data. It uses "Safe Injectors" (<code>utils/safe_injector.py</code>) to write configuration files atomically.</li>
+                        <li><strong class="text-violet-500">Sentient Middleware:</strong> It is not just a UI. It is an active participant. The "Bridge Server" (<code>core/bridge_server.py</code>) actively modifies network traffic to fix AI mistakes in real-time.</li>
+                        <li><strong class="text-emerald-500">Nuclear Debugging:</strong> When things break, they break loudly. The system logs every heartbeat, every port check, and every failed handshake to <code>h4_omni_debug.log</code>.</li>
+                    </ul>
+                `
+            },
+            {
+                id: "RITUAL",
+                title: "01_RITUAL",
+                icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>`,
+                subtitle: "Installation & Execution",
+                html: `
+                    <div class="flex" style="gap: 20px; flex-wrap: wrap;">
+                        <div class="card" style="flex: 1; min-width: 300px;">
+                            <h3 style="color: #22d3ee; margin-top: 0;">THE WIZARD</h3>
+                            <p>On your first run, the <code>SystemBootstrapper</code> (main.py) detects a missing <code>first_run</code> flag in <code>omni_settings.json</code>. It launches the Wizard.</p>
+                            <ol style="margin-left: 20px; font-family: 'Consolas', monospace; font-size: 0.9em; color: #cbd5e1;">
+                                <li><strong>Pre-Flight Check:</strong> The <code>DependencyScanner</code> ensures Ollama is installed in default paths (<code>%LOCALAPPDATA%/Programs/Ollama</code>).</li>
+                                <li><strong>Target Acquisition:</strong> The <code>HunterProtocol</code> scans ALL drives for <code>Mantella.exe</code>, <code>SkyrimSE.exe</code>, and Mod Managers (MO2/Vortex).</li>
+                                <li><strong>Configuration:</strong> You select your LLM model (e.g., Llama3:8b) and TTS engine.</li>
+                                <li><strong>Ignition:</strong> The tool writes the initial config and reboots into the Dashboard.</li>
+                            </ol>
+                        </div>
+                        <div class="card" style="flex: 1; min-width: 300px;">
+                            <h3 style="color: #c084fc; margin-top: 0;">REALITY CHECK (Hardware)</h3>
+                            <ul style="margin-left: 20px; font-size: 0.9em;">
+                                <li>⚠️ <strong>The Cold Start:</strong> Ollama needs up to 5 minutes to load 8GB-12GB models into VRAM. If the console says "Loading...", WAIT.</li>
+                                <li>⚠️ <strong>VRAM is King:</strong> 
+                                    <ul>
+                                        <li><strong>8GB Cards:</strong> Stick to 7B or 8B quantized models (q4_k_m).</li>
+                                        <li><strong>12GB+ Cards:</strong> Can run Llama3-8B unquantized or larger vision models.</li>
+                                    </ul>
+                                </li>
+                                <li>⚠️ <strong>Port Conflicts:</strong> The tool demands ports <strong>4999, 5000, 5001, 11434</strong>. Disable other AI webuis or reassign ports in settings.</li>
+                            </ul>
+                        </div>
+                    </div>
+                `
+            },
+            {
+                id: "CORTEX",
+                title: "02_CORTEX",
+                icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect><rect x="9" y="9" width="6" height="6"></rect><line x1="9" y1="1" x2="9" y2="4"></line><line x1="15" y1="1" x2="15" y2="4"></line><line x1="9" y1="20" x2="9" y2="23"></line><line x1="15" y1="20" x2="15" y2="23"></line><line x1="20" y1="9" x2="23" y2="9"></line><line x1="20" y1="14" x2="23" y2="14"></line><line x1="1" y1="9" x2="4" y2="9"></line><line x1="1" y1="14" x2="4" y2="14"></line></svg>`,
+                subtitle: "System Architecture Deep Dive",
+                html: `
+                    <p>The Omni-Tool behaviors are divided into three "Cortex" regions. Understanding this helps you debug.</p>
+                    
+                    <div class="card">
+                        <h4 class="text-cyan-500 font-bold">A. THE CONDUCTOR (main.py)</h4>
+                        <p><strong>Role:</strong> Bootstrapper & Lifecycle Manager.</p>
+                        <ul class="text-sm font-mono mt-2 text-slate-400">
+                            <li>- Inits <code>ctk</code> (CustomTkinter) theme.</li>
+                            <li>- Scans <code>requirements.txt</code> via <code>check_and_install_requirements()</code>.</li>
+                            <li>- Enforces Console Hiding via <code>ctypes.WinDLL('user32').ShowWindow(hWnd, 0)</code> unless <code>--debug</code> is present.</li>
+                            <li>- Spawns the Splash Screen thread to prevent UI freezing during file I/O.</li>
+                        </ul>
+                    </div>
+
+                    <div class="card">
+                        <h4 class="text-violet-500 font-bold">B. THE HUNTER (core/scanner.py)</h4>
+                        <p><strong>Role:</strong> File System Crawler.</p>
+                        <p>Uses <code>os.walk</code> with specific exclusions (Windows, Program Files (x86), $Recycle.Bin) to rapidly locate games. It builds a cache <code>_scan_cache</code> in <code>omni_settings.json</code> to avoid re-scanning every launch.</p>
+                        <div class="bg-slate-900 p-2 mt-2 rounded border border-slate-700 text-xs font-mono">
+                            <span class="text-yellow-500">Heuristic Logic:</span><br>
+                            If "Mantella.exe" is found, it checks neighborhood for "SKSE/" or "Speech/".<br>
+                            If inside a "mods" folder (MO2/Vortex detection), it relaxes validation rules.
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h4 class="text-emerald-500 font-bold">C. THE SURGEON (utils/safe_injector.py)</h4>
+                        <p><strong>Role:</strong> Configuration Writer.</p>
+                        <p>Never trusts the user. It generates a "Gold Master" <code>config.ini</code> from an internal string template. It forces:</p>
+                        <ul class="text-sm font-mono mt-2 text-slate-400">
+                            <li><code>llm_api = http://127.0.0.1:5001</code> (Routing traffic to our Proxy)</li>
+                            <li><code>allow_actions = True</code> (Enabling inventory/follow commands)</li>
+                            <li><code>vision_enabled = True/False</code> (Based on UI toggle)</li>
+                        </ul>
+                    </div>
+                `
+            },
+            {
+                id: "OPERATIONS",
+                title: "03_OPS",
+                icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>`,
+                subtitle: "Advanced Features & Protocols",
+                html: `
+                    <h3>👻 THE NEURAL BRIDGE (Port 5001)</h3>
+                    <p>Located in <code>core/bridge_server.py</code>. This is the "Man-in-the-Middle" proxy that sits between Mantella (Game) and Ollama (Brain).</p>
+                    
+                    <div class="card mb-4">
+                        <h4 class="text-cyan-500">Puppeteer Protocol V5</h4>
+                        <p><strong>Problem:</strong> Local LLMs (Llama3, Mistral) are stubborn. They often refuse to output the exact tag <code>[inventory]</code> needed to open the menu, even when asked.</p>
+                        <p><strong>Solution:</strong> The Bridge Sniffs every packet.</p>
+                        <ol class="list-decimal ml-6 mt-2 text-sm text-slate-300">
+                            <li><strong>Intent Detection:</strong> Scans prompt for "buy", "sell", "trade", "wares".</li>
+                            <li><strong>System Injection:</strong> If intent found, pre-pends <code>[SYSTEM]: YOU MUST USE [inventory]</code> to the prompt before Ollama sees it.</li>
+                            <li><strong>Stream Analysis:</strong> As Ollama replies, the Bridge buffers the text.</li>
+                            <li><strong>The "Double Tap":</strong> If the intent was trade, but the AI <em>failed</em> to say <code>[inventory]</code>, the Bridge <strong>MANUALLY APPENDS</strong> the tag to the end of the byte stream. The game never knows the AI failed.</li>
+                        </ol>
+                    </div>
+
+                    <div class="card mb-4">
+                        <h4 class="text-red-500">The Mechanical Bypass</h4>
+                        <p><strong>Problem:</strong> Sometimes Mantella's internal DLL (SKSE) rejects the AI's action tag due to encoding or case-sensitivity.</p>
+                        <p><strong>Solution:</strong> Redundant Signaling.</p>
+                        <p>When the Proxy detects a valid trade command, it write a physical file <code>_mantella_omni_action.txt</code> to the game directory. A custom Papyrus script (installed by <code>mantella_patcher.py</code>) polls for this file every 1 second. If found, it forces the menu open, bypassing the DLL entirely.</p>
+                    </div>
+
+                    <h3>🛡️ FIREWALL SCALPEL</h3>
+                    <p><code>utils/firewall_mgr.py</code> uses <code>netsh advfirewall</code> commands to surgically open ports 5001 (Proxy), 5000 (xVASynth), and 11434 (Ollama) only for the local subnet. It requires Admin privileges (UAC Prompt).</p>
+                `
+            },
+            {
+                id: "GRIMOIRE",
+                title: "04_GRIMOIRE",
+                icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>`,
+                subtitle: "Troubleshooting & Log Analysis",
+                html: `
+                     <h3>DIAGNOSTIC LOG CODES</h3>
+                     <table style="width:100%; text-align:left; border-collapse:collapse; font-size: 0.9em;">
+                        <tr style="border-bottom:1px solid #334155;"><th class="p-2 text-cyan-500">CODE / ERROR</th><th class="p-2 text-slate-300">MEANING & FIX</th></tr>
+                        <tr style="border-bottom:1px solid #1e293b;"><td class="p-2 text-red-400">ConnectionRefusedError: 10061</td><td class="p-2">Target service is dead. Usually Ollama (11434). check if <code>ollama serve</code> is running.</td></tr>
+                        <tr style="border-bottom:1px solid #1e293b;"><td class="p-2 text-yellow-400">OSError: Address already in use</td><td class="p-2">Port 5001/4999 is taken. Another instance of Omni-Tool or Mantella is running. Check Task Manager.</td></tr>
+                        <tr style="border-bottom:1px solid #1e293b;"><td class="p-2 text-violet-400">[PUPPETEER] Intent Confirmed</td><td class="p-2">Proxy successfully detected a trade request and is monitoring for the tag.</td></tr>
+                        <tr><td class="p-2 text-orange-400">FileNotFoundError: config.ini</td><td class="p-2">Mantella path is wrong. Go to Settings -> Rescan System.</td></tr>
+                     </table>
+                     
+                     <div class="card mt-8" style="border-color: #ef4444;">
+                         <h4 style="color: #ef4444;">CRITICAL: "The AI talks but lips don't move"</h4>
+                         <p><strong>Cause:</strong> xVASynth / XTTS is failing to generate the <code>.wav</code> and <code>.lip</code> files.</p>
+                         <p><strong>Fix:</strong> Check the Dashboard Log. If you see "TTS Service Timeout", switch to a lighter model or disable "Fast Response Mode". Ensure <code>xVASynth.exe</code> is actually running (Config -> Launch xVASynth).</p>
+                     </div>
+
+                     <div class="card" style="border-color: #eab308;">
+                         <h4 style="color: #eab308;">CRITICAL: "Inventory Not Opening"</h4>
+                         <p><strong>Scenario:</strong> AI says "Here are my wares", but no menu.</p>
+                         <p><strong>Fix:</strong></p>
+                         <ul>
+                            <li>1. Ensure <strong>ALLOW ACTIONS</strong> is enabled in Mantella MCM (in-game).</li>
+                            <li>2. Verify <code>MantellaAction_OffendForgiveFollow.pex</code> exists in <code>Data/Scripts</code>.</li>
+                            <li>3. Check <code>h4_omni_debug.log</code> for "[PUPPETEER] Force Injecting". If that log appears, the tool did its job; the game script failed to receive it.</li>
+                         </ul>
+                     </div>
+                `
+            },
+            {
+                id: "SETTINGS",
+                title: "05_SETTINGS",
+                icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.78 1.35a2 2 0 0 0 .73 2.73l.15.08a2 2 0 0 1 1 1.73v.18a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.78-1.35a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.73v-.18a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></svg>`,
+                subtitle: "Configuration & Customization",
+                html: `
+                    <h3>⚙️ OMNI-SETTINGS.JSON</h3>
+                    <p>This file, located in the root directory, stores all user preferences and system configurations. It's a simple JSON file, safe to edit manually if you know what you're doing.</p>
+                    
+                    <div class="card">
+                        <h4 class="text-cyan-500">KEY SETTINGS</h4>
+                        <ul class="text-sm font-mono mt-2 text-slate-400">
+                            <li><code>"ollama_path": "C:\\Users\\User\\AppData\\Local\\Programs\\Ollama\\ollama.exe"</code> - Path to your Ollama executable.</li>
+                            <li><code>"mantella_path": "D:\\Games\\Skyrim Special Edition\\Mantella.exe"</code> - Path to your Mantella executable.</li>
+                            <li><code>"selected_llm_model": "llama3:8b"</code> - The Ollama model to use for AI conversations.</li>
+                            <li><code>"tts_engine": "xvasynth"</code> - Currently only xVASynth is supported.</li>
+                            <li><code>"fast_response_mode": true</code> - If true, TTS audio generation is prioritized over quality.</li>
+                            <li><code>"scan_cache": {}</code> - Stores results of previous file system scans to speed up startup.</li>
+                        </ul>
+                    </div>
+
+                    <h3>🛠️ ADVANCED TWEAKS</h3>
+                    <p>For power users, the following settings can be adjusted directly in <code>omni_settings.json</code>:</p>
+                    <div class="card">
+                        <h4 class="text-violet-500">BRIDGE SERVER SETTINGS</h4>
+                        <ul class="text-sm font-mono mt-2 text-slate-400">
+                            <li><code>"bridge_port": 5001</code> - Port for the Neural Bridge (Proxy).</li>
+                            <li><code>"ollama_api_base": "http://localhost:11434/api"</code> - Base URL for the Ollama API.</li>
+                            <li><code>"xvasynth_port": 5000</code> - Port for the xVASynth API.</li>
+                            <li><code>"action_file_poll_interval": 1000</code> - How often (in ms) the Papyrus script checks for the action file.</li>
+                        </ul>
+                    </div>
+                `
+            }
+        ];
+
+        // Wraps the entire initialization to ensure templates are parsed before access
+        document.addEventListener("DOMContentLoaded", () => {
+
+            // --- INJECT STATIC CONTENT ---
+            const archiveTmp = document.getElementById('template-archives');
+            if (archiveTmp) {
+                CONTENT.push({
+                    id: "ARCHIVES",
+                    title: "06_ARCHIVES",
+                    icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>`,
+                    subtitle: "The Great Archives",
+                    html: archiveTmp.innerHTML
+                });
+            }
+
+            const whitepaperTmp = document.getElementById('template-whitepaper');
+            if (whitepaperTmp) {
+                CONTENT.push({
+                    id: "WHITEPAPER",
+                    title: "07_WHITEPAPER",
+                    icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>`,
+                    subtitle: "Technical Specification",
+                    html: whitepaperTmp.innerHTML
+                });
+            }
+
+            // --- RENDER ---
+            const navContainer = document.getElementById('nav-items');
+            const mainContainer = document.getElementById('main-content');
+
+            // 1. Render Nav & Content
+            CONTENT.forEach(section => {
+                // Nav
+                const btn = document.createElement('div');
+                btn.className = 'nav-item';
+                btn.dataset.target = section.id;
+                btn.innerHTML = `
+                <div class="nav-icon text-slate-500">${section.icon}</div>
+                <div class="nav-text">
+                    <div class="font-bold font-mono text-sm">${section.title}</div>
+                    <div class="text-xs text-slate-500 uppercase">${section.subtitle}</div>
+                </div>
+            `;
+                btn.onclick = () => scrollToSection(section.id);
+                navContainer.appendChild(btn);
+
+                // Content
+                const sec = document.createElement('section');
+                sec.id = section.id;
+                sec.innerHTML = `
+                <div style="display:flex; align-items:center; gap:10px; margin-bottom: 20px; border-bottom: 1px solid #1e293b; padding-bottom: 10px;">
+                    <div class="text-cyan-500">${section.icon}</div>
+                    <h2>${section.title}</h2>
+                </div>
+                <div>${section.html}</div>
+            `;
+                mainContainer.appendChild(sec);
+            });
+
+            // 2. Intersection Observer for Active State
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        // Update Nav
+                        document.querySelectorAll('.nav-item').forEach(el => {
+                            el.classList.toggle('active', el.dataset.target === entry.target.id);
+                            // Icon Color Toggle
+                            const icon = el.querySelector('.nav-icon');
+                            icon.classList.toggle('text-cyan-500', el.dataset.target === entry.target.id);
+                            icon.classList.toggle('text-slate-500', el.dataset.target !== entry.target.id);
+                        });
+
+                        // Update Section Opacity
+                        document.querySelectorAll('section').forEach(sec => {
+                            sec.classList.toggle('active-section', sec.id === entry.target.id);
+                        });
+                    }
+                });
+            }, { threshold: 0.3 });
+
+            document.querySelectorAll('section').forEach(sec => observer.observe(sec));
+        });
+
+        // 3. Scroll Logic
+        function scrollToSection(id) {
+            document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+        }
+
+    </script>
+    <template id="template-archives">
+        <!-- BEGIN AMALGAMATED CONTENT -->
+        <!-- Onboarding Bible (Verbose Intro and Modules) -->
+        <!--
+Onboarding Bible – Comprehensive Technical Specification
+Purpose: Provide an exhaustive reference for the Mantella Omni-Tool, covering architecture, modules, configuration, deployment, troubleshooting, and development guidelines.
+Audience: Advanced users, developers, integrators, support engineers.
+Scope: Documents every Python module, UI component, utility, and external dependency.
+Structure: Table of Contents linking to each module section; each module includes Purpose, Public API, Implementation Details, Performance Notes, Platform Specifics, Quirks, Edge Cases, Known Bugs, Security Considerations, Future Improvements, Data Points (≥30 per module).
+Data Points: Includes file path, class/function signatures, line counts, import dependencies, runtime behavior, threading model, I/O patterns, error handling strategies, logging details, configuration defaults, versioning, compatibility notes, performance benchmarks, memory usage, security implications, testing coverage, CI integration, deployment steps, user interaction flows, UI layout details, theme usage, accessibility considerations, localization support, backward compatibility, migration paths, known limitations, troubleshooting steps, recovery mechanisms, recommended hardware, OS requirements, Python version, package dependencies, environment variables, registry keys, firewall rules, network ports, external services, licensing, attribution.
+Design Philosophy: Modular architecture, explicit error handling, extensive logging, atomic file operations, DPAPI encryption for sensitive data, dynamic theming, high-DPI support, multi-monitor handling, background threading for long‑running tasks, graceful shutdown, audit logging, telemetry opt‑in, privacy‑first approach.
+Usage: Open in a web browser to navigate; search via built‑in JavaScript; view module details; copy code snippets; reference performance tables; follow deployment checklist.
+Maintenance: Auto‑generated sections can be refreshed by running the documentation generation script; manual edits are preserved within dedicated comment blocks.
+Version: Reflects codebase state as of 2025‑12‑26; includes recent enhancements such as UI icon handling, firewall management, and patch installation workflow.
+-->
+        <h2 id="module-debug_config_dump-py">debug_config_dump.py</h2>
+        <p><strong>Purpose:</strong> Utility script that dumps the current configuration and runtime state to a JSON
+            file
+            for debugging and support purposes.</p>
+        <ul>
+            <li>Imports <code>json</code>, <code>os</code>, <code>logging</code>, and internal
+                <code>utils.logger</code>.
+            </li>
+            <li>Defines <code>CONFIG_DUMP_PATH</code> defaulting to <code>h4_omni_debug_dump.json</code> in the
+                application
+                root.</li>
+            <li>Function <code>collect_runtime_state()</code> gathers:</li>
+            <ul>
+                <li>Active settings from <code>omni_settings.json</code>.</li>
+                <li>Current process ID and thread count.</li>
+                <li>Loaded modules list via <code>sys.modules</code>.</li>
+                <li>Recent log entries (last 500 lines) by reading <code>h4_omni_debug.log</code>.</li>
+                <li>Network port usage via <code>psutil.net_connections()</code>.</li>
+                <li>GPU information via <code>torch.cuda</code> if available.</li>
+                <li>Environment variables relevant to the tool.</li>
+                <li>Timestamp of dump creation.</li>
+            </ul>
+            <li>Function <code>write_dump()</code> serialises the state to JSON with <code>indent=2</code> and writes
+                atomically using a temporary file.</li>
+            <li>CLI entry point parses optional <code>--output</code> argument to override the dump path.</li>
+            <li>Logs success or failure to <code>h4_omni_debug.log</code> with <code>INFO</code> or <code>ERROR</code>
+                level.</li>
+            <li>Returns exit code 0 on success, 1 on failure.</li>
+            <li>Important notes:</li>
+            <ul>
+                <li>Sensitive fields (API keys) are redacted before writing.</li>
+                <li>File permissions are set to <code>600</code> on Windows via <code>os.chmod</code> (restricted to
+                    owner).
+                </li>
+                <li>Used by support teams to reproduce issues without needing the full system.</li>
+                <li>Quirks: If the log file is locked by another process, the dump may contain incomplete log data.</li>
+                <li>Potential issues: Large dump size on systems with many loaded modules; may exceed 5 MB.</li>
+                <li>Mitigation: Truncate module list to top 100 entries.</li>
+                <li>Performance: Dump generation typically <200 ms.< /li>
+                <li>Security: Dump file is written to the user’s profile directory; ensure it is not shared
+                    inadvertently.
+                </li>
+                <li>Future improvement: Add optional encryption flag.</li>
+                <li>Unit tests cover path overrides, redaction, and error handling.</li>
+            </ul>
+        </ul>
+        <!-- Additional module sections omitted for brevity in this example -->
+        <!-- README (text portion up to line 387, ASCII art excluded) -->
+        <h2 id="readme-section">README Overview</h2>
+        <p><strong>h4 Mantella Omni-Tool (v7.0)</strong></p>
+        <p><em>“Because giving NPCs a soul shouldn't require a degree. But we used one to build this anyway.”</em></p>
+        <h3>What is this thing?</h3>
+        <p>Okay listen. You want to talk to Skyrim NPCs. You want them to talk back. You saw a video on YouTube and
+            thought
+            "that looks cool" but then you saw the installation instructions involved Python and coding and ports and
+            you
+            almost clicked away.</p>
+        <p>Don't panic. That is why I built this.</p>
+        <p><strong>This tool is your easy button.</strong> Normally, getting AI to talk to Skyrim is like trying to
+            teach a
+            cat calculus. The game is old. The AI is new. They hate each other. This tool forces them to get along.</p>
+        <h3>What it does for you:</h3>
+        <ol>
+            <li><strong>Finds your game</strong>: You don't need to tell it where Skyrim is. It knows.</li>
+            <li><strong>Installs the boring stuff</strong>: It handles all the Python libraries and dependencies so you
+                don't have to open a command prompt.</li>
+            <li><strong>Fixes the bugs</strong>: There are about fifty tiny bugs in the original mod setup (ports,
+                icons,
+                firewall blocks). We squashed them all.</li>
+            <li><strong>Generates the Config</strong>: You click one button, and it writes the messy `.ini` files for
+                you.
+            </li>
+        </ol>
+        <h3>How to use it:</h3>
+        <ol>
+            <li><strong>Download &amp; Run</strong>: Just open <code>h4_Mantella_Omni_Tool.exe</code>.</li>
+            <li><strong>Wizard</strong>: It will pop up a little window scanning your computer. Let it finish.</li>
+            <li><strong>Configure</strong>: Click the big <strong>"CONFIGURE"</strong> button (Button [2]). Here you can
+                choose your AI model.</li>
+            <li><strong>Activate</strong>: Click the big <strong>"ACTIVATE SERVICES"</strong> button (Button [3]). It
+                should
+                say "Ollama server is running".</li>
+            <li><strong>Play</strong>: Launch Skyrim (SKSE). Wait for Mantella to Load. It'll DONG - On you.</li>
+        </ol>
+        <p>That's it. You don't need to be a coder. You just need to want to play.</p>
+        <h3>Hardware Reality Check (Read This First!)</h3>
+        <p><em>“My GPU is screaming, is that normal?”</em> <em>Yes. It's thinking.</em></p>
+        <p>AI isn't magic. It's math. Heavy, hot, expensive math. Before you blame the tool for lagging, check your rig.
+        </p>
+        <h4>A. The "Cold Start" (Patience is a Virtue)</h4>
+        <p>When you first launch the game (or the tool), <strong>Ollama needs to load the model into VRAM.</strong></p>
+        <ul>
+            <li><strong>Time:</strong> 30 seconds to <strong>5 MINUTES</strong>.</li>
+            <li><strong>Symptom:</strong> You say "Hello", and the game freezes or does nothing.</li>
+            <li><strong>Reality:</strong> The lower your system specs, the longer this takes. <strong>DO NOT
+                    PANIC.</strong>
+                Just wait.</li>
+            <li><strong>Auto‑Sleep:</strong> If you don't talk for 10 minutes, Ollama unloads the model. The next reply
+                will
+                trigger the "Cold Start" wait again.</li>
+        </ul>
+        <h4>B. Speed vs. Smarts (Model Choice)</h4>
+        <p><strong>Size Matters.</strong></p>
+        <ul>
+            <li><strong>7B Models (Fast)</strong>: Respond in seconds. Good for quick banter. Might forget your name.
+            </li>
+            <li><strong>8B‑13B Models (Balanced)</strong>: The standard. Good mix of memory and speed.</li>
+            <li><strong>70B+ Models (Slow)</strong>: Takes minutes to reply. Writes Shakespearean poetry. Only for
+                supercomputers.</li>
+            <li><strong>Lesson:</strong> If the AI is too slow, <strong>pick a smaller model.</strong> A fast idiot is
+                better than a slow genius in a real‑time game.</li>
+        </ul>
+        <h4>B. The VRAM Guide (Video Memory)</h4>
+        <p><strong>System RAM</strong> (32GB DDR4) is useful, but <strong>VRAM</strong> (Video Card Memory) is King.</p>
+        <p>If the model doesn't fit in VRAM, it runs on your CPU, which is 50x slower.</p>
+        <h5>🟢 6GB - 8GB VRAM (Entry Level)</h5>
+        <ul>
+            <li><strong>Target:</strong> <code>q4_k_m</code> (Compressed).</li>
+            <li><strong>Recommended Models:</strong> <code>llama3:8b</code>, <code>dolphin-llama3:8b</code>
+                (Uncensored),
+                <code>mistral</code>.
+            </li>
+            <li><strong>Warning:</strong> Don't run 4K Graphics Mods + AI on 8GB. You will crash.</li>
+        </ul>
+        <h5>🟡 12GB VRAM (The Sweet Spot)</h5>
+        <ul>
+            <li><strong>Target:</strong> Full <code>8b</code> models or compressed <code>13b</code>.</li>
+            <li><strong>Recommended Models:</strong> <code>hermes-2-pro-llama-3</code>, <code>mythomax-l2-13b</code>
+                (Great
+                storytelling).</li>
+        </ul>
+        <h5>🔴 24GB VRAM (The Enthusiast)</h5>
+        <ul>
+            <li><strong>Target:</strong> <code>mixtral:8x7b</code>, <code>command-r</code>.</li>
+            <li><strong>Why?</strong> God‑tier memory usage for God‑tier roleplay.</li>
+        </ul>
+        <h4>C. Common Mistakes</h4>
+        <ul>
+            <li><strong>Using Vision Models</strong>: Do NOT use <code>llava</code>. It is for images, not talking.</li>
+            <li><strong>Using Base Models</strong>: Ensure the model is "Instruct" or "Chat". Base models just ramble.
+            </li>
+        </ul>
+    </template>
+
+    <template id="template-whitepaper">
+        <!-- WHITEPAPER START -->
+        <div class="whitepaper-content">
+            <h1 id="h4-mantella-omni-tool-v66">h4 Mantella Omni-Tool v6.6</h1>
+            <h2 id="comprehensive-technical-whitepaper">Comprehensive Technical Whitepaper</h2>
+            <h3 id="a-complete-guide-to-every-feature-function-and-line-of-code">A Complete Guide to Every Feature,
+                Function, and Line of Code</h3>
+            <hr />
+            <h2 id="document-purpose">Document Purpose</h2>
+            <p>This whitepaper serves as a <strong>complete technical documentation</strong> of the h4 Mantella
+                Omni-Tool. It is written for <strong>absolute beginners</strong> who have little to no programming
+                experience, yet need to understand, explain, and potentially modify every single feature of this
+                application.</p>
+            <p><strong>Target Audience</strong>:
+                - Non-technical stakeholders
+                - Beginning programmers
+                - System administrators
+                - Anyone who needs to fully understand how this tool works</p>
+            <p><strong>Reading Level</strong>: Plain English with technical concepts explained using everyday analogies
+            </p>
+            <hr />
+            <h2 id="section-1-project-overview-core-mission">SECTION 1: PROJECT OVERVIEW &amp; CORE MISSION</h2>
+            <h3 id="feature-the-why-this-tool-exists-the-problem-statement">Feature: The "Why This Tool Exists" - The
+                Problem Statement</h3>
+            <p><strong>Data Point 1: The Core Problem Being Solved</strong>
+                The Mantella mod allows players to have AI-powered conversations with NPCs (Non-Player Characters) in
+                games like Skyrim and Fallout. However, getting it to work requires installing and configuring THREE
+                separate technology systems simultaneously: (1) the game engine itself, (2) a Python-based AI backend
+                called Ollama, and (3) custom mod files. Most users fail at this because these systems hate each other
+                and require precise configuration files, correct library versions, and correct network port settings.
+                <strong>The tool automates all of this.</strong>
+            </p>
+            <p><strong>Data Point 2: The User Pain Points Eliminated</strong>
+                Before this tool, users had to: manually find where their game was installed (some computers have it on
+                C:\ drive, some on D:\ or E:), download and install Python (which many don't have), use Windows command
+                prompts to install libraries (terrifying for non-coders), edit <code>.ini</code> configuration files by
+                hand (one typo breaks everything), open Windows Firewall settings (which looks like an alien spaceship
+                control panel), and pray that all the mod versions matched the game version. <strong>This tool does all
+                    8-10 of these steps automatically.</strong></p>
+            <p><strong>Data Point 3: The Architecture Philosophy - "Sentient Middleware"</strong>
+                Instead of asking the user "Are you sure?", this tool <strong>assumes everything is broken and fixes it
+                    without asking</strong>. It doesn't say "I couldn't find your game" - it hunts across all hard
+                drives. It doesn't say "you're missing libraries" - it installs them silently. It doesn't say "Port 5000
+                is in use" - it kills the process and restarts the service. It's designed to be <strong>antagonistically
+                    helpful</strong>: aggressive enough to fix problems, but quiet enough that the user doesn't feel
+                assaulted by error messages.</p>
+            <p><strong>Data Point 4: Technology Stack (The Three Nations)</strong>
+                The tool is built from three separate technology layers, each handling a different responsibility:
+                - <strong>The Conductor</strong> (User Interface): Written in CustomTkinter and Tkinter. This is what
+                the user sees and clicks on. It handles all button clicks, window management, and progress displays.
+                - <strong>The Cortex</strong> (Business Logic): Written in Python. This is the "thinking" part - it
+                decides what needs to be done, what order to do it in, and how to handle failures.
+                - <strong>The Surgeon</strong> (File Operations): Written in Python with Windows API calls. This is the
+                "hands" part - it touches the file system, reads game configs, edits INI files, and manages permissions.
+            </p>
+            <p><strong>Data Point 5: Version and Release Status</strong>
+                Currently at <strong>v1.0b</strong> (released December 26, 2025). The tool has gone through 6 major
+                version cycles, each one based on user feedback and real-world failure modes discovered in the field.
+                Version 1.0b represents a complete rewrite focusing on reliability over feature density. Each version
+                represents approximately 2-3 months of development and testing.</p>
+            <p><strong>Data Point 6: Deployment Method - Frozen Executable</strong>
+                The tool is deployed as a single <code>.exe</code> file (Windows executable) created using PyInstaller.
+                This means: the user doesn't need Python installed, they don't need to understand command prompts, and
+                they can't accidentally break the tool by deleting a file. <strong>It's a black box that works.</strong>
+                The entire Python environment, all libraries, and all assets are bundled into one ~50MB executable.</p>
+            <p><strong>Data Point 7: Target Games and Platforms</strong>
+                The tool supports: Skyrim Special Edition, Skyrim Anniversary Edition, Skyrim VR, Fallout 4, and Fallout
+                4 VR. It only runs on <strong>Windows</strong> (because the mod ecosystem is Windows-exclusive). It
+                requires <strong>Windows 10 or later</strong> and at least <strong>4GB of RAM</strong> (8GB
+                recommended). The tool itself doesn't require a powerful GPU, but the <strong>AI processing
+                    does</strong> - hence the recommendation for 6GB+ VRAM.</p>
+            <p><strong>Data Point 8: Open Architecture Philosophy</strong>
+                The tool is <strong>not</strong> closed-source or proprietary. Every component is designed to be
+                understandable, modifiable, and replaceable. If someone wants to replace the Ollama backend with a
+                different AI service, they can. If someone wants to add support for a new game, they can. The codebase
+                includes comments, function documentation, and error messages written in plain language specifically to
+                enable modification and understanding by future coders.</p>
+            <p><strong>Data Point 9: Target User Skill Level</strong>
+                The primary user is someone who: owns Skyrim or Fallout, has installed mods before (so they understand
+                MO2 or Vortex), but has <strong>never written code or used Python</strong>. They understand the game
+                modding ecosystem but are intimidated by anything command-line or code-related. The tool is designed for
+                this exact person - it removes all code/command-line requirements entirely.</p>
+            <p><strong>Data Point 10: Success Metric Definition</strong>
+                A "successful" run is when: (1) the tool finds the user's game, (2) identifies all required mod
+                dependencies, (3) detects or downloads the AI model, (4) configures all networking ports, (5) starts the
+                Ollama service in the background, (6) modifies the game's INI files safely, (7) launches the game
+                without errors, (8) the first NPC dialogue responds with AI-generated text, (9) response time is under
+                10 seconds, and (10) the user hears the audio response without crashes. The tool measures success by
+                whether the user can talk to an NPC and get an AI response on the first try.</p>
+            <hr />
+            <h2 id="section-2-the-user-interface-experience-layer">SECTION 2: THE USER INTERFACE &amp; EXPERIENCE LAYER
+            </h2>
+            <h3 id="feature-the-splash-screen-first-impression-asset-loading">Feature: The Splash Screen - First
+                Impression &amp; Asset Loading</h3>
+            <p><strong>Data Point 1: Purpose and Function</strong>
+                When you launch the executable, the first thing you see is a 400x300 pixel window with the Mantella logo
+                and a loading progress bar. This serves THREE purposes simultaneously: (1) it's a "please wait" signal
+                so the user knows the program is thinking (not frozen), (2) it tells the program time to load heavy
+                libraries like CustomTkinter and Pillow in the background, and (3) it displays status messages updating
+                the user on what's happening ("Loading dependencies...", "Scanning system...", etc.). The splash screen
+                closes automatically once the main window is ready.</p>
+            <p><strong>Data Point 2: Asset Loading Strategy</strong>
+                The splash window tries to load a PNG image file called <code>logo.png</code> from an
+                <code>assets/</code> folder. If the image exists, it displays it. If the image is missing (common when
+                files get deleted or the build is corrupted), the program <strong>gracefully degrades</strong> - it just
+                displays text saying "MANTELLA" instead. This is a defensive programming pattern: the program never
+                crashes because an image is missing; it just looks uglier. This happens in the <code>splash.py</code>
+                file in the <code>SplashController</code> class.
+            </p>
+            <p><strong>Data Point 3: Animated Progress Bar</strong>
+                The progress bar doesn't actually track real progress (it can't, because the background loading isn't
+                being measured). Instead, it uses an <code>.start()</code> method that makes the bar <strong>loop
+                    continuously</strong> - the bar fills and empties and fills again. This is called an "indeterminate
+                progress bar" - it says "something is happening" without claiming to know how long it will take. This is
+                more honest than a fake progress bar that goes 0% to 100% arbitrarily.</p>
+            <p><strong>Data Point 4: Status Label Updating</strong>
+                Below the progress bar is text that says things like "Initializing..." or "Checking dependencies...".
+                This text is updated by the main program using a method called <code>update_status()</code>. Every time
+                something important happens in the background, the main program calls this method with a message like
+                "Attaching to SKSE log..." and the splash screen updates the user in real-time. The user watches the
+                journey.</p>
+            <p><strong>Data Point 5: Icon and Branding</strong>
+                The window displays an icon (the small square image in the title bar) that matches the application icon.
+                This makes the tool feel "official" and identifiable in the Windows taskbar. The icon file is
+                <code>icon.ico</code> and is loaded aggressively using three different methods - if one method fails,
+                the code tries another. This is because Windows icon handling is notoriously buggy and unpredictable.
+            </p>
+            <p><strong>Data Point 6: Responsive to First-Run Scenario</strong>
+                If this is the user's first time running the tool, the splash screen displays slightly longer because
+                the dependency bootstrapper needs extra time to install missing libraries. The bootstrapper shows a
+                popup saying "Installing system updates: flask, requests, customtkinter..." and then
+                <strong>automatically restarts the program</strong>. When it relaunches, the splash screen shows again,
+                but this time dependencies are ready.
+            </p>
+            <p><strong>Data Point 7: Taskbar Integration</strong>
+                Even though the splash window is small (400x300), it appears in the Windows taskbar at the bottom of the
+                screen. This prevents the accidental "I clicked something and now there's no visible window" problem. If
+                the user accidentally hides or minimizes the window, they can click the taskbar to get it back. This
+                integration uses a Windows API hack called <code>SetCurrentProcessExplicitAppUserModelID</code>.</p>
+            <p><strong>Data Point 8: Memory Footprint During Load</strong>
+                The splash screen is intentionally minimal - it uses very little RAM and CPU. It displays a static image
+                and a simple progress bar. This is important because the background loading is CPU-intensive (importing
+                hundreds of Python libraries). By keeping the splash screen light, the main program gets more resources
+                to initialize without the UI appearing to hang.</p>
+            <p><strong>Data Point 9: Borderless Window Design</strong>
+                The splash window has <code>overrideredirect=True</code>, which means <strong>it has no title bar,
+                    minimize/maximize buttons, or borders</strong>. It's just a pure rectangle with content. This gives
+                it a more "modern app" feel and prevents the user from accidentally maximizing it to full screen (which
+                would look weird). The user can still drag it to move it using the mouse.</p>
+            <p><strong>Data Point 10: Timeout and Auto-Close Logic</strong>
+                The splash screen monitors the main window's initialization state. Once it detects that the main window
+                is ready (by checking if certain key objects are created), it automatically destroys itself and passes
+                control to the main window. If something goes catastrophically wrong during initialization, there's a
+                timeout of 30 seconds - if the main window hasn't appeared by then, the splash screen gives up and shows
+                an error. This prevents the user from staring at a progress bar forever.</p>
+            <hr />
+            <h3 id="feature-the-main-application-window-command-control-center">Feature: The Main Application Window -
+                Command &amp; Control Center</h3>
+            <p><strong>Data Point 1: Window Architecture - "The Frame Stack"</strong>
+                The main window is built using a technique called "frame stacking". Imagine stacking cards on top of
+                each other - each card is a different view (Landing page, Dashboard, Download page, etc.), but only the
+                top card is visible. When the user navigates to a different section, the program brings a different card
+                to the front using a method called <code>.tkraise()</code>. This is more efficient than creating and
+                destroying windows constantly. All frames are created at startup (even though they're hidden) so
+                switching between them is instant.</p>
+            <p><strong>Data Point 2: Frameless Window Design - The Aesthetic</strong>
+                The main window has <code>overrideredirect=True</code>, meaning <strong>it has no Windows title bar or
+                    borders</strong>. Instead, the program draws its own custom title bar in the topmost frame. This
+                gives it a "modern app" look (like Spotify or Discord). The custom title bar includes: the app name
+                "MANTELLA OMNI-TOOL", a help button (?), a minimize button (_), and a close button (X). These are just
+                clickable buttons made to look like standard window controls.</p>
+            <p><strong>Data Point 3: Taskbar Appearance Despite Being Frameless</strong>
+                Here's a problem: normally, frameless windows (<code>overrideredirect=True</code>) don't appear in the
+                Windows taskbar - they're treated as "tool windows" that disappear when you click away. But the user
+                needs to see this in the taskbar. So the program uses a Windows API hack: it calls
+                <code>SetWindowLongW</code> with the <code>WS_EX_APPWINDOW</code> flag to <strong>force</strong> the
+                frameless window to appear in the taskbar like a normal window. This is in <code>window_utils.py</code>
+                in the <code>force_taskbar_visibility()</code> function.
+            </p>
+            <p><strong>Data Point 4: Window Dragging - Custom Implementation</strong>
+                Since the window has no title bar, you can't drag it by clicking on the frame (because there is no
+                frame). So the program detects mouse clicks on the custom title bar and measures how much the mouse has
+                moved since the last click, then moves the entire window by that amount. This is done by binding mouse
+                events (<code>&lt;ButtonPress-1&gt;</code>, <code>&lt;B1-Motion&gt;</code>,
+                <code>&lt;ButtonRelease-1&gt;</code>) to functions that update the window's geometry based on cursor
+                position. The user experiences it as normal window-dragging, but it's actually code calculating window
+                positions.
+            </p>
+            <p><strong>Data Point 5: Grid-Based Layout System</strong>
+                The window is organized using Tkinter's <code>.grid()</code> layout manager, which divides the window
+                into rows and columns. The header frame occupies row 0 (the top), and a container frame occupies row 1
+                (the middle, where the actual content goes). The container frame is set to <code>weight=1</code>,
+                meaning it expands to fill available space. This is why the content area grows if the user resizes the
+                window - the weighted rows grow proportionally.</p>
+            <p><strong>Data Point 6: Fixed Size - Preventing Distortion</strong>
+                The window is set to 900x600 pixels with <code>resizable(False, False)</code>, which means <strong>the
+                    user cannot resize it</strong>. This ensures the UI looks exactly as designed on all screens. If
+                resizing were allowed, buttons might wrap strangely, text might overflow, or the layout might break. By
+                keeping it fixed, the developers guarantee consistent appearance. The window is centered on-screen using
+                <code>center_window()</code>.
+            </p>
+            <p><strong>Data Point 7: Thread-Safe Message Queue</strong>
+                The main program runs on multiple threads: the UI thread (Thread-0, the main thread) and worker threads
+                for scanning, downloading, and monitoring logs. But Python's Tkinter is <strong>NOT thread-safe</strong>
+                - only the main thread can update the UI. So worker threads can't directly call
+                <code>.configure()</code> or <code>.insert()</code>. Instead, worker threads put messages into a Python
+                <code>queue.Queue()</code>, and the main thread checks this queue every 50 milliseconds using
+                <code>check_log_queue()</code>. This prevents crashes from threads stepping on each other.
+            </p>
+            <p><strong>Data Point 8: Aggressive Shutdown Cleanup</strong>
+                When the user closes the window, the <code>close_app()</code> method runs. This method: (1) cancels all
+                pending Tkinter callbacks using <code>after_cancel()</code> to prevent "invalid command name" errors,
+                (2) destroys all frames, (3) terminates the child Ollama process, (4) kills any active server threads,
+                (5) calls <code>sys.exit(1)</code>, and if that doesn't work, calls <code>os._exit(0)</code>. This is
+                "belt and suspenders" - using multiple shutdown methods to ensure the program actually closes. On
+                Windows, lingering processes can cause headaches for users trying to rerun the tool.</p>
+            <p><strong>Data Point 9: Color Theming System - Dynamic Skin Switching</strong>
+                The entire UI is skinned using variables from <code>ui/theme.py</code>: <code>COL_ACCENT</code>,
+                <code>COL_BTN_BORDER</code>, <code>COL_BTN_HOVER</code>, etc. By changing these variables, the entire UI
+                changes color instantly. There's even an easter egg: holding Ctrl+Shift+H+4 triggers
+                <code>cycle_theme()</code>, which rotates through 7 different color schemes (Green, Blue, Pink, Orange,
+                Red, Purple, Yellow). This is done by clicking on the signature text in the log window. Users can
+                customize the look without modifying code.
+            </p>
+            <p><strong>Data Point 10: Icon Injection - Three-Layer Fallback</strong>
+                When the main window loads, it tries to set its icon three times using three different methods: (1)
+                immediately using <code>wm_iconbitmap(default=path)</code>, (2) using standard
+                <code>.iconbitmap(path)</code>, and (3) deferred using <code>.after(200, ...)</code> in case the window
+                handle isn't ready yet. This is because Windows sometimes ignores icon requests if the window isn't
+                fully initialized. By trying three times, the tool dramatically increases the chance of successfully
+                showing the icon. The icon appears in the title bar and in the taskbar.
+            </p>
+            <hr />
+            <h3 id="feature-the-log-display-area-real-time-feedback">Feature: The Log Display Area - Real-Time Feedback
+            </h3>
+            <p><strong>Data Point 1: Purpose and Information Hierarchy</strong>
+                The largest portion of the dashboard is a scrollable text box that displays a "log" - a chronological
+                record of everything the program is doing. When you click "SCAN", it fills with messages like "[SYSTEM]
+                Hunter Protocol Initiated...", "[SYSTEM] Mounting Drive C:", "[SYSTEM] Found Skyrim SE at
+                C:\Games\Skyrim", etc. This gives the user transparency - they can watch exactly what's happening
+                instead of staring at a frozen progress bar. The log is <strong>searchable</strong> - the user can type
+                keywords to find specific messages.</p>
+            <p><strong>Data Point 2: Text Widget Implementation - Memory Management</strong>
+                The log uses Tkinter's <code>CTkTextbox</code> widget, which is a managed text display. Text insertion
+                happens in the <code>log_write()</code> method. To prevent memory exhaustion (the log could grow to
+                thousands of lines), there's a garbage collection mechanism: if the log exceeds 800 lines, lines 1-300
+                are deleted, keeping only the most recent 500 lines. This prevents the window from becoming sluggish
+                after an hour of use. The deletion happens silently - the user just sees the oldest messages
+                disappearing.</p>
+            <p><strong>Data Point 3: Threading Safety - Queue-Based Updates</strong>
+                The log display <strong>cannot</strong> be directly updated from worker threads (they'll crash Tkinter).
+                Instead, worker threads put tuples into <code>self.log_queue</code>:
+                <code>("SCAN_LOG", "Found something at C:\...")</code>. The main thread calls
+                <code>check_log_queue()</code> every 50ms, pulls messages from the queue, and inserts them into the log
+                using <code>log_write()</code>. This is the queue pattern - it prevents race conditions where multiple
+                threads fight over who updates the UI.
+            </p>
+            <p><strong>Data Point 4: Tag-Based Coloring System</strong>
+                Different types of messages have different colors using Tkinter "tags". Error messages are red
+                (<code>color: #ff3333</code>), warnings are yellow (<code>color: #ffcc00</code>), and success messages
+                are green (<code>color: #00ff99</code>). When a message is inserted with
+                <code>log_box.insert("end", message, "error")</code>, the "error" tag is applied, which makes the text
+                red. Tags are defined at startup in <code>log_box.tag_config()</code> and never change, so the color
+                scheme is consistent throughout the session.
+            </p>
+            <p><strong>Data Point 5: Privacy Sanitization - Data Scrubbing</strong>
+                Every message inserted into the log passes through the <code>sanitize()</code> function from
+                <code>utils/privacy.py</code>. This function <strong>removes usernames from paths</strong>. For example,
+                if a path is "C:\Users\DarkKinkLord\Documents\Skyrim", it becomes "C:\Users\%USER%\Documents\Skyrim". If
+                a filename mentions the username, that becomes "%USER%" too. This is important because logs are often
+                shared for debugging - users don't want their Windows username (which might include their real name)
+                broadcast in a support forum. The sanitization is automatic and invisible to the user.
+            </p>
+            <p><strong>Data Point 6: Scrolling Behavior - Auto-Follow Latest</strong>
+                When new messages are added to the log, the display automatically scrolls to the bottom to show the
+                latest message. This is done with <code>log_box.see("end")</code>, which moves the view to the "end"
+                position. This way, the user doesn't have to scroll manually - they always see the newest information.
+                If the user manually scrolls up to read history, the auto-scroll still works for new messages.</p>
+            <p><strong>Data Point 7: Read-Only Display Mode</strong>
+                Once messages are inserted, the text box is immediately set to <code>state="disabled"</code>, making it
+                read-only. The user can scroll and read, but they can't accidentally delete or modify messages. This
+                prevents confusion - there's a clear separation between "what the program says" (log) and "what the user
+                can change" (buttons and input fields). Only the program can modify the log.</p>
+            <p><strong>Data Point 8: Multi-Line Message Handling</strong>
+                Some messages are single-line ("Found Ollama"), others are multi-line (diagnostic info with tabs and
+                newlines). The <code>log_write()</code> method handles both: it takes a string, appends <code>\n</code>
+                to ensure it ends with a newline, and inserts the whole thing. Multi-line messages are treated as atomic
+                units - they're inserted as a single operation, so they stay together even if they span multiple lines.
+            </p>
+            <p><strong>Data Point 9: Hyperlink Detection - Special Formatting</strong>
+                One type of message triggers special formatting: when the text contains "ready for inspection", that
+                word gets a "hyperlink" tag applied. This changes the color and text underline to signal "this is
+                clickable". The log detects this phrase and applies formatting automatically. This signals to users that
+                further action is needed (like reviewing a file). It's a UX signal without actual clickability.</p>
+            <p><strong>Data Point 10: Performance Optimization - Lazy Rendering</strong>
+                The text box doesn't re-render every time a message is added. Instead, rendering is deferred: messages
+                are queued up, and the rendering happens on a 50ms interval (20 times per second). This batching means
+                if 10 messages arrive in quick succession, they're rendered together in one batch, not one-at-a-time.
+                This is more efficient and prevents the UI from flickering as each message appears individually. The
+                user sees smooth, batched updates.</p>
+            <hr />
+            <h2 id="section-3-the-scanner-system-finding-your-game">SECTION 3: THE SCANNER SYSTEM - FINDING YOUR GAME
+            </h2>
+            <h3 id="feature-the-hunter-protocol-aggressive-game-discovery">Feature: The Hunter Protocol - Aggressive
+                Game Discovery</h3>
+            <p><strong>Data Point 1: Purpose and Scope</strong>
+                The Scanner's job is to locate every important application and mod on the user's computer: Where is
+                Skyrim installed? Where is Ollama? Where are the Mantella mod files? Where are mod managers like Mod
+                Organizer 2 or Vortex? This is accomplished by the <code>HunterProtocol</code> class, a threaded scanner
+                that walks the entire file system looking for specific files. The scan runs on a separate thread so it
+                doesn't freeze the UI. A full scan of a multi-drive system can take 5-20 minutes, depending on file
+                count and drive speed.</p>
+            <p><strong>Data Point 2: The TARGETS Dictionary - The Search Recipe</strong>
+                The scanner has a predefined list of things to find, defined in <code>core/__init__.py</code> as the
+                <code>TARGETS</code> dictionary. This is basically a shopping list:
+                <code>"Mantella": {"file": "Mantella.exe", "type": "dir", "found": None}</code>, meaning "find a folder
+                containing Mantella.exe". The dictionary has entries for 15+ targets including Skyrim.exe, Ollama.exe,
+                xVASynth.exe, mod manager executables, and plugin files. Each target has metadata: what file to search
+                for, whether it's an executable or a directory, and where it was found (once located).
+            </p>
+            <p><strong>Data Point 3: Quick Scan vs. Deep Scan - Speed Optimization</strong>
+                The scan happens in two phases:
+                - <strong>Quick Scan</strong> (30 seconds): Checks common locations like C:\Games, D:\Games, C:\Program
+                Files, Desktop, etc. This is the "fast path" that catches 80% of installations immediately.
+                - <strong>Deep Scan</strong> (15 minutes): If the quick scan misses something, the program walks every
+                single folder on every drive, looking for files. This is slower but comprehensive.
+                Most users experience only the quick scan time. Deep scans are a fallback for unusual installations.</p>
+            <p><strong>Data Point 4: Drive Detection - Finding All Storage</strong>
+                The scanner uses <code>win32api.GetLogicalDriveStrings()</code> to get a list of all mounted drives
+                (C:\, D:\, E:\, etc.). On most consumer PCs this is just C:\, but some users have external drives, NAS
+                drives, or multiple internal drives. The scanner automatically detects all of them and searches each
+                one. This is why the tool can find games installed on unusual locations without the user telling it.</p>
+            <p><strong>Data Point 5: Blacklist System - Preventing Infinite Loops</strong>
+                Some folders are known time-wasters: Windows system folders, node_modules (if the user is a web
+                developer), .git folders (version control), $RECYCLE.BIN, etc. The <code>BLACKLIST_DIRS</code> set in
+                <code>core/__init__.py</code> contains folder names to skip. When the scanner is walking the file tree
+                and encounters a folder named "Windows", it skips it entirely and doesn't recurse into it. This saves
+                massive amounts of time - scanning \Windows alone could take 10 minutes.
+            </p>
+            <p><strong>Data Point 6: Case-Insensitive Matching - Windows Filesystem Reality</strong>
+                Windows file systems are case-insensitive: "Mantella.exe", "mantella.exe", and "MANTELLA.EXE" are all
+                the same file. The scanner exploits this by converting all filenames to lowercase before comparing:
+                <code>if file.lower() == "mantella.exe"</code>. This prevents the scanner from missing files just
+                because the capitalization is weird. The comparison is fast (string comparison is O(n) where n is string
+                length, usually 20-50 characters).
+            </p>
+            <p><strong>Data Point 7: Conflict Detection - Multiple Installations</strong>
+                If the scanner finds two copies of Skyrim installed (one in C:\Games, one in D:\Games), it detects this
+                and flags it as a conflict. The <code>candidates</code> list in the TARGETS dictionary stores all found
+                locations, not just the first one. If there are multiple candidates, the UI displays a yellow warning
+                icon and lets the user choose which one to use. This prevents silently choosing the wrong installation.
+            </p>
+            <p><strong>Data Point 8: Pattern Matching - Smart Library Detection</strong>
+                Some files don't have fixed names. The Address Library mod uses filenames like
+                <code>versionlib-1.2.3-14.bin</code>. The scanner can't look for an exact filename because the version
+                numbers change. So it uses pattern matching: it looks for files that <strong>start with</strong>
+                "versionlib-" and <strong>end with</strong> ".bin". This is a prefix+suffix match that catches any
+                version. This is defined with <code>"type": "pattern"</code> in the TARGETS dictionary.
+            </p>
+            <p><strong>Data Point 9: Mod Manager Structure Awareness - Heuristic Scanning</strong>
+                When the scanner finds <code>ModOrganizer.exe</code>, it knows that MO2 usually has a "mods" folder in
+                the same location. So it immediately starts scanning that "mods" folder more aggressively, looking for
+                nested mod folders. Similarly, if it finds <code>Vortex.exe</code>, it looks for a "Vortex Mods" folder
+                on the drive root. This heuristic knowledge allows the scanner to find nested mods even in unusual
+                folder structures. It's not perfect, but it's better than random searching.</p>
+            <p><strong>Data Point 10: Result Persistence - Caching Scan Results</strong>
+                Once a scan completes, the results are saved to <code>omni_settings.json</code> using
+                <code>settings.save_scan_data()</code>. This creates a cache: `{"Mantella": "D:\Games\Skyrim...",
+                "Ollama": "C:\Users...\AppData..."}``. Next time the user runs the tool, the cached locations are
+                checked first before rescanning. If cached locations still exist, the scan is skipped entirely - the
+                tool launches instantly. If a cached location is deleted, the cache entry is invalidated and a rescan is
+                triggered. This is why the second run of the tool is typically 10x faster.
+            </p>
+            <hr />
+            <h3 id="feature-the-ollama-dependency-detector-ai-backend-verification">Feature: The Ollama Dependency
+                Detector - AI Backend Verification</h3>
+            <p><strong>Data Point 1: Purpose in the Larger System</strong>
+                Ollama is the AI engine that powers NPC dialogue. It's a separate application that runs locally on the
+                user's computer and generates text responses. The Omni-Tool detects whether Ollama is installed and
+                running. If it's not installed, the tool can download it. If it's installed but not running, the tool
+                can start it. If it's running but slow, the tool suggests optimizations. The dependency detector is the
+                gatekeeper - it won't let the user proceed without a working Ollama setup.</p>
+            <p><strong>Data Point 2: Hardcoded Search Paths</strong>
+                The detector checks known installation paths for Ollama:
+                - <code>C:\Users\[Username]\AppData\Local\Programs\Ollama\ollama.exe</code>
+                - <code>C:\Program Files\Ollama\ollama.exe</code>
+                - <code>C:\Ollama\ollama.exe</code>
+                These are the most common paths. If Ollama isn't in these locations, the detector falls back to checking
+                the system PATH environment variable (a list of directories where Windows searches for executables). If
+                Ollama is in the PATH, <code>shutil.which("ollama")</code> will find it. This multi-path search catches
+                99% of real-world installations.</p>
+            <p><strong>Data Point 3: HTTP Health Check - Liveness Detection</strong>
+                Even if ollama.exe exists on disk, it might not be running. The detector makes an HTTP GET request to
+                <code>http://localhost:11434/</code> (Ollama's default port). If the request succeeds and returns status
+                code 200, Ollama is running. If the request fails (connection refused), Ollama is not running. This is a
+                "liveness check" - it proves the service is alive and responding. It's faster and more reliable than
+                checking process lists.
+            </p>
+            <p><strong>Data Point 4: Auto-Launch Capability - Silent Background Start</strong>
+                If Ollama is installed but not running, the tool can launch it automatically using
+                <code>subprocess.Popen([ollama_exe, "serve"], startupinfo=startupinfo)</code>. The
+                <code>startupinfo</code> object is configured with <code>STARTF_USESHOWWINDOW</code>, which launches
+                Ollama in the background without a visible window. The user doesn't see an Ollama window pop up - it
+                just works silently. The tool then waits up to 8 seconds for Ollama to start (checking the HTTP health
+                endpoint repeatedly) before declaring success or failure.
+            </p>
+            <p><strong>Data Point 5: Process Lifecycle Management - Owned vs. Ambient</strong>
+                The tool distinguishes between two types of Ollama processes:
+                - <strong>Owned</strong>: The tool launched it. So the tool <strong>owns</strong> the process and must
+                clean it up on exit using <code>terminate()</code>.
+                - <strong>Ambient</strong>: Ollama was already running before the tool started. The tool didn't launch
+                it, so it shouldn't kill it.
+                This distinction is tracked by storing the process handle in <code>OllamaManager._process</code>. On
+                shutdown, only owned processes are terminated. This prevents the tool from accidentally killing the
+                user's Ollama service.</p>
+            <p><strong>Data Point 6: Model Library Query - What's Installed Locally</strong>
+                Even if Ollama is running, it might not have any AI models installed. Models are large (2-50GB) and take
+                hours to download. The tool queries Ollama's API using
+                <code>requests.get("http://localhost:11434/api/tags")</code> to list installed models. The response is
+                JSON: <code>{"models": [{"name": "llama3:latest"}, {"name": "mistral:7b"}]}</code>. The tool parses this
+                and displays available models to the user, allowing them to choose which one to use for NPC dialogue.
+            </p>
+            <p><strong>Data Point 7: Model Download Coordination - Pull with Progress</strong>
+                If the user's chosen model isn't installed, the tool can download it using
+                <code>OllamaManager.pull_model()</code>. This makes a POST request to Ollama's <code>/api/pull</code>
+                endpoint with the model name. Ollama starts streaming download progress:
+                <code>{"status": "pulling layer xyz", "completed": 500000000, "total": 1000000000}</code>. The tool
+                calculates the percentage (500M/1000M = 50%) and displays a progress bar. Large models (13GB+) can take
+                30 minutes on a slow connection, so progress feedback is essential.
+            </p>
+            <p><strong>Data Point 8: Quick Generation Test - Proof of Concept</strong>
+                Once Ollama and a model are confirmed ready, the tool tests generation using
+                <code>OllamaManager.quick_generate()</code>. It sends a test prompt like "Say hello" to the model and
+                waits for a response. If the response comes back (e.g., "Hello! How can I help?"), the model is
+                confirmed working. If generation times out or returns an error, the tool reports the issue. This is a
+                "hello world" test proving the AI backend is functional.
+            </p>
+            <p><strong>Data Point 9: Fallback Model Suggestions - Smart Defaults</strong>
+                If the user's computer is slow or has limited VRAM, the tool suggests specific models optimized for
+                those constraints. For 6GB VRAM, it suggests <code>dolphin-llama3:8b</code> (smaller, faster). For 24GB
+                VRAM, it suggests <code>mixtral:8x7b</code> (larger, smarter). These suggestions are hardcoded in the UI
+                and based on real-world testing. They prevent users from picking a 70B model and then waiting 10 minutes
+                for each NPC response.</p>
+            <p><strong>Data Point 10: Error Recovery - Graceful Degradation</strong>
+                If the dependency detector fails at any step, the tool doesn't crash. Instead, it displays a warning and
+                gives the user options: "Ollama is not running. Would you like to: (A) Wait for it to start, (B) Launch
+                it myself, (C) Skip and try later?" This is graceful degradation - the tool doesn't require perfection;
+                it adapts to partial failure and lets the user make choices. The goal is forward progress, not purity.
+            </p>
+            <hr />
+            <h2 id="section-4-the-configuration-engine-telling-the-game-how-to-talk-to-ai">SECTION 4: THE CONFIGURATION
+                ENGINE - TELLING THE GAME HOW TO TALK TO AI</h2>
+            <h3 id="feature-the-ini-surgeon-safe-configuration-file-manipulation">Feature: The INI Surgeon - Safe
+                Configuration File Manipulation</h3>
+            <p><strong>Data Point 1: The Problem Being Solved</strong>
+                The game (Skyrim/Fallout) is configured using <code>.ini</code> files - plain-text files with key=value
+                pairs like <code>bEnableLogging=1</code>. The Mantella mod expects certain settings to be configured
+                correctly. The Omni-Tool reads the game's INI files, checks if required settings are present and
+                correct, and modifies them if needed. This is the "surgery" - it's careful, targeted modification, not
+                wholesale replacement. The INI Surgeon class exists to do this safely.</p>
+            <p><strong>Data Point 2: Game-Specific INI Path Resolution</strong>
+                Different games store INI files in different locations. Skyrim SE keeps them in
+                <code>%USERPROFILE%\Documents\My Games\Skyrim Special Edition\</code>. Fallout 4 keeps them in
+                <code>%USERPROFILE%\Documents\My Games\Fallout4\</code>. The tool resolves these paths by: (1) reading
+                the <code>USERPROFILE</code> environment variable to get the user's home directory, (2) appending the
+                game-specific subdirectory, (3) looking for INI files named <code>Skyrim.ini</code>,
+                <code>SkyrimPrefs.ini</code>, and <code>SkyrimCustom.ini</code> (or equivalents for Fallout). This is
+                implemented in <code>INISurgeon.setup_targets()</code>.
+            </p>
+            <p><strong>Data Point 3: Safe Read-Modify-Write Pattern</strong>
+                The INI Surgeon never deletes or replaces INI files. Instead: (1) it opens the file in read mode and
+                parses every line, (2) if a required setting is missing, it prepares an addition but doesn't write yet,
+                (3) once all modifications are queued, it opens the file in write mode and writes everything back,
+                including new settings. This is the atomic transaction pattern - either all changes succeed, or none do.
+                If the program crashes mid-write, the file is left in a consistent state (original state, not
+                half-modified).</p>
+            <p><strong>Data Point 4: Backup Creation - Disaster Recovery</strong>
+                Before modifying an INI file, the tool creates a backup: <code>Skyrim.ini.backup</code>. If the
+                modification causes the game to crash (which is rare but possible), the user can manually restore the
+                backup. Backups have timestamps: <code>Skyrim.ini.backup.2025-12-26-1053</code>. This allows multiple
+                backups to coexist - the user can restore to any point in history. Backups are never deleted
+                automatically; they're left for the user to manage.</p>
+            <p><strong>Data Point 5: Permission Handling - Admin Elevation</strong>
+                Sometimes, INI files are read-only (their "read-only" attribute is set). Modifying a read-only file
+                fails. The tool detects this and attempts to clear the read-only flag using <code>os.chmod()</code>. If
+                that fails (due to insufficient permissions), the tool tries to elevate to admin using a UAC (User
+                Access Control) prompt. The user sees a popup asking "This app wants to make changes to your computer.
+                Allow?" - they click "Yes" and the tool runs with admin privileges. This is implemented in
+                <code>ini_surgeon.py</code> in the <code>patch_files()</code> method.
+            </p>
+            <p><strong>Data Point 6: Conflict Resolution - Merging Custom Configurations</strong>
+                If a user has already manually edited an INI file and set a value, the INI Surgeon detects this and
+                preserves it rather than overwriting. For example, if the file already says
+                <code>bEnableLogging=1</code>, the Surgeon doesn't change it, even if its rule also says
+                <code>bEnableLogging=1</code>. The Surgeon only adds settings that are <strong>missing
+                    entirely</strong>. This respects user customization - it doesn't wipe out tweaks the user has made.
+                The merge is conservative: existing settings are never overwritten, only new settings are added.
+            </p>
+            <p><strong>Data Point 7: Validation of Applied Changes - Verification</strong>
+                After writing an INI file, the tool re-reads it to verify the changes were applied successfully. It
+                checks: (1) Is the file still readable? (2) Do the key=value pairs I just wrote actually exist when I
+                re-read? If verification fails, it logs an error and rolls back using the backup. This prevents silent
+                failures - if the modifications didn't actually take effect (e.g., due to permission issues), the tool
+                knows and alerts the user, rather than claiming success and leaving the user with a broken setup.</p>
+            <p><strong>Data Point 8: INI Injection into Mantella's Config - The Metapatch</strong>
+                The Mantella mod itself reads a configuration file called <code>Mantella.ini</code>. The Omni-Tool
+                doesn't directly edit Mantella.ini (that's Mantella's responsibility). Instead, the tool generates a
+                complete Mantella.ini configuration based on the user's settings: game mode, proxy port, model choice,
+                TTS settings, etc. This generated config is injected using the <code>safe_injector.py</code> module,
+                which replaces placeholders in a template with actual values. For example, <code>{game_mode}</code>
+                becomes <code>"Skyrim"</code>, <code>{port}</code> becomes <code>5001</code>, etc. This is a template
+                substitution pattern.</p>
+            <p><strong>Data Point 9: Multi-File Consistency Checking - Cross-File Validation</strong>
+                Some settings need to be consistent across multiple INI files. For example, if <code>Skyrim.ini</code>
+                says one thing and <code>SkyrimPrefs.ini</code> says another, the game can behave unpredictably. The INI
+                Surgeon checks for inconsistencies and flags them: "Warning: bEnableLogging is set to 1 in Skyrim.ini
+                but 0 in SkyrimPrefs.ini. This could cause issues." The user can then manually review and fix these
+                conflicts, or let the tool fix them automatically. This consistency checking is implemented in the
+                <code>_finalize_scan()</code> method.
+            </p>
+            <p><strong>Data Point 10: Logging All Modifications - Audit Trail</strong>
+                Every modification is logged to the debug log: "[SURGEON] Modified Skyrim.ini: Added sSection=[Papyrus]
+                sLog=papyrus.0.log". This audit trail allows users to understand exactly what the tool changed, and
+                makes it possible for developers to debug issues ("the user says the AI mod isn't loading - what did we
+                tell the INI file?"). The log preserves the old value and new value: "[SURGEON] Changed
+                bUseMultiThreadedBlood from 1 to 0". This transparency is critical for trust and debugging.</p>
+            <hr />
+            <h2 id="section-5-the-neural-bridge-intercepting-ai-requests">SECTION 5: THE NEURAL BRIDGE - INTERCEPTING AI
+                REQUESTS</h2>
+            <h3 id="feature-the-http-proxy-server-man-in-the-middle-for-ai-responses">Feature: The HTTP Proxy Server -
+                Man-in-the-Middle for AI Responses</h3>
+            <p><strong>Data Point 1: Purpose - Why Interception Exists</strong>
+                The game runs Mantella.exe, which makes HTTP requests to Ollama asking for NPC dialogue: "Generate a
+                response for an Orc blacksmith in Whiterun at night." Ollama generates text like "Aye, the forge never
+                sleeps!" But the game sometimes doesn't properly parse the response or integrate it correctly. The
+                Neural Bridge is a transparent proxy - it intercepts every request/response pair, logs it, and can
+                modify responses before sending them back to the game. This allows the tool to inject special tags (like
+                <code>[inventory]</code>) that signal the game to perform specific actions.
+            </p>
+            <p><strong>Data Point 2: Proxy Architecture - Sitting Between Game and AI</strong>
+                The game is configured to connect to the proxy (port 5001) instead of directly to Ollama (port 11434).
+                The proxy listens on 5001 and forwards requests to Ollama on 11434. From the game's perspective, it's
+                talking to Ollama. But it's actually talking to a Python HTTP server built with
+                <code>http.server.BaseHTTPRequestHandler</code> and <code>socketserver.TCPServer</code>. This is a
+                classic man-in-the-middle (MITM) pattern - it's transparent to both parties.
+            </p>
+            <p><strong>Data Point 3: Request Parsing - Understanding Ollama's API</strong>
+                Ollama supports multiple API endpoints. The proxy detects which endpoint is being called:
+                <code>/api/generate</code> (simple generation), <code>/api/chat</code> (conversation format),
+                <code>/v1/chat/completions</code> (OpenAI-compatible format), or <code>/chat/completions</code>. The
+                proxy supports all of them because different Mantella versions use different formats. Once the endpoint
+                is identified, the proxy reads the HTTP body (which is JSON) and parses it using
+                <code>json.loads()</code>. This gives it access to the prompt, system message, model name, and other
+                parameters.
+            </p>
+            <p><strong>Data Point 4: Prompt Analysis - Intent Detection</strong>
+                The proxy examines the prompt to understand what the game is asking for. It looks for keywords like
+                "inventory", "trade", "buy", "sell", "wares", "goods", "shop", "purchase". If any of these are found,
+                the proxy knows: "The user is trying to trade with an NPC." This intent detection allows the proxy to
+                inject special behavior - for example, forcing the NPC to include the tag <code>[inventory]</code> in
+                their response, which signals the game's event system to open the inventory screen. The keyword matching
+                is case-insensitive: "Inventory", "INVENTORY", and "inventory" all match.</p>
+            <p><strong>Data Point 5: System Instruction Injection - Puppeteering the AI</strong>
+                The proxy modifies the request before forwarding it to Ollama. Specifically, it injects a system
+                instruction: "IF the user wants to trade, buy, sell, or browse goods, you MUST include the tag
+                '[inventory]' in your response." This instruction is appended to any existing system message. By doing
+                this, the proxy essentially tells Ollama "whenever inventory is involved, ALWAYS include [inventory]".
+                This is prompt engineering - using carefully crafted instructions to control AI behavior. It's not
+                forcing the AI; it's requesting it, and most models comply.</p>
+            <p><strong>Data Point 6: Streaming Response Handling - Real-Time Passthrough</strong>
+                Ollama can stream responses (returning text in chunks as it's generated, like a typewriter effect) or
+                return the complete response at once. The proxy handles both modes. When streaming is enabled, the proxy
+                forwards chunks of the response back to the game as they arrive, creating a seamless experience. The
+                proxy doesn't buffer the entire response; it acts as a pipe, forwarding data in real-time. This is
+                important for responsiveness - the game starts displaying text while the AI is still generating.</p>
+            <p><strong>Data Point 7: Stream Sniffing - Analyzing Generated Text</strong>
+                As the response streams back, the proxy analyzes the text looking for keywords. If it detects that the
+                AI is talking about inventory ("I'll show you my wares", "Let me open my inventory", "Here's what I
+                have"), but hasn't yet included the <code>[inventory]</code> tag, the proxy injects the tag at the end
+                of the stream. This is the "P.S. Strategy" - if the AI forgets to include the tag, the proxy adds it as
+                an afterthought. This safety net catches cases where the AI misunderstands the instruction or doesn't
+                fully comply.</p>
+            <p><strong>Data Point 8: End-of-Stream Injection - Tactical Placement</strong>
+                The proxy waits until the response is nearly complete before injecting tags, placing them at the very
+                end. This ensures the tag isn't buried in the middle of the response where the game might miss it. For
+                example: "I'll gladly trade with you! [inventory]" instead of "I'll [inventory] gladly trade with you!"
+                The placement is strategic - it's a suffix, not an infix. The proxy calculates when the stream is ending
+                (when Ollama sends <code>"done": True</code>) and injects right before that marker.</p>
+            <p><strong>Data Point 9: Multi-Format Response Handling - API Compatibility</strong>
+                Different Ollama API formats have different response structures. In the <code>/api/generate</code>
+                format, responses are like: <code>{"response": "text"}</code>. In the <code>/v1/chat/completions</code>
+                format, they're like: <code>{"choices": [{"delta": {"content": "text"}}]}</code>. The proxy detects
+                which format is being used and injects tags in the correct location. For generate format, it wraps the
+                injection in a generate-format chunk. For chat format, it wraps it in a delta chunk. This
+                format-awareness allows the proxy to work transparently with any Ollama client.</p>
+            <p><strong>Data Point 10: Logging and Monitoring - Observability</strong>
+                Every request and response is logged to the console and to the main window's log display. The log shows:
+                "[PROXY] Intercepted Request (1234 bytes)", "[PUPPETEER] Analyzing Request. Prompt snippet: 'show me
+                what you have'...", "[PUPPETEER] Intent Detected: TRADE/INVENTORY. Arming injectors." This logging
+                allows developers to debug issues and users to understand why the AI behaved a certain way. The logging
+                is detailed but readable - it uses the <code>_log()</code> function which handles both console and UI
+                display.</p>
+            <hr />
+            <h2 id="section-6-the-firewall-management-system">SECTION 6: THE FIREWALL MANAGEMENT SYSTEM</h2>
+            <h3 id="feature-automatic-port-whitelisting-network-access-granting">Feature: Automatic Port Whitelisting -
+                Network Access Granting</h3>
+            <p><strong>Data Point 1: The Problem - Windows Blocks Everything by Default</strong>
+                Windows Firewall is a security feature that blocks all incoming network connections by default. When the
+                Omni-Tool opens a TCP server on port 5001, the firewall sees it as "a program is trying to receive
+                network connections" and blocks it. The game can't connect because the firewall is in the way. The tool
+                needs to explicitly tell the firewall "port 5001 is okay, allow it." This is called "whitelisting" -
+                adding an exception to the firewall's blocklist. Without this, the game can't communicate with the
+                proxy.</p>
+            <p><strong>Data Point 2: Port Requirements - What Needs Opening</strong>
+                The tool needs to open four specific TCP ports:
+                - <strong>4999</strong>: Mantella.exe server (alternative port if 5000 is in use)
+                - <strong>5000</strong>: Mantella.exe server (primary port)
+                - <strong>5001</strong>: Omni-Tool Proxy
+                - <strong>11434</strong>: Ollama API
+                Each of these needs a separate firewall rule. The tool creates four rules at startup using
+                <code>firewall_mgr.enforce_omni_ports()</code>. This ensures all necessary ports are open and the game
+                can communicate freely with the proxy and AI backend.
+            </p>
+            <p><strong>Data Point 3: Rule Creation Using Netsh Command</strong>
+                The tool uses Windows's <code>netsh</code> command-line tool to create firewall rules. The command looks
+                like:
+                <code>netsh advfirewall firewall add rule name="Omni-Tool Proxy (TCP 5001)" dir=in action=allow protocol=TCP localport=5001</code>.
+                This is executed using <code>subprocess.run()</code>, which calls the command as if the user typed it in
+                PowerShell. The rule is named (so it's identifiable in Firewall Settings), directional (inbound only),
+                and specific (TCP protocol, specific port). Once created, the rule persists even after the tool closes.
+            </p>
+            <p><strong>Data Point 4: Duplicate Detection - Preventing Rule Duplication</strong>
+                If the user runs the tool multiple times, it shouldn't create the same rule ten times over. So the tool
+                first checks if a rule with the same name already exists using
+                <code>netsh advfirewall firewall show rule name="Omni-Tool Proxy (TCP 5001)"</code>. If the command
+                succeeds (returns exit code 0), the rule exists. If it fails (exit code nonzero), the rule doesn't
+                exist. Only if the rule doesn't exist does the tool create it. This prevents rule duplication and keeps
+                the firewall settings clean.
+            </p>
+            <p><strong>Data Point 5: Admin Elevation - Getting Permission</strong>
+                Creating firewall rules requires administrator privileges. If the user isn't running as admin, the tool
+                detects this using <code>ctypes.windll.shell32.IsUserAnAdmin()</code>. If not admin, it requests
+                elevation using
+                <code>ctypes.windll.shell32.ShellExecuteW(None, "runas", "netsh", params, None, 1)</code>. This triggers
+                the "User Account Control" (UAC) popup: "Do you want to allow this app to make changes to your device?"
+                The user clicks "Yes" and the tool runs with admin rights. If they click "No", the firewall rules aren't
+                created, and a warning is displayed.
+            </p>
+            <p><strong>Data Point 6: Rule Naming Convention - Human-Readable Identification</strong>
+                Each rule is named with a clear, descriptive name: "Mantella Omni-Tool (TCP 5001)". This makes it
+                identifiable in Windows Firewall Settings (Settings &gt; Privacy &amp; Security &gt; Firewall &gt;
+                Allowed apps). Users can review the rules, see exactly what the tool added, and delete them if needed.
+                This transparency is important - users should understand what the tool is doing to their firewall and be
+                able to undo it.</p>
+            <p><strong>Data Point 7: Cleanup on Uninstall - Removing Rules</strong>
+                If the user uninstalls the tool or wants to remove it cleanly, they might want to delete the firewall
+                rules it created. The tool provides instructions (in the README) on how to manually delete the rules
+                using Windows Firewall Settings. Alternatively, a future cleanup script could automate this using
+                <code>netsh advfirewall firewall delete rule name="Mantella Omni-Tool (TCP 5001)"</code>. For now,
+                cleanup is manual, but it's straightforward.
+            </p>
+            <p><strong>Data Point 8: Verification of Successful Rule Creation - Liveness Check</strong>
+                After creating a firewall rule, the tool verifies it was actually created by checking port connectivity.
+                It attempts to establish a connection to <code>localhost:5001</code>. If the connection succeeds, the
+                port is open. If the connection fails even after rule creation, something went wrong (possibly a
+                conflicting rule or a permissions issue). The tool logs this result: "[FIREWALL] Successfully opened
+                Port 5001 (Omni-Tool Proxy)" or "[FIREWALL] Failed to open Port 5001: [error message]".</p>
+            <p><strong>Data Point 9: Conflict Detection - Port Already In Use</strong>
+                Sometimes, another application is already using a port. For example, if the user has Discord running
+                (which might use port 5001), the tool's firewall rule is irrelevant - the port is occupied by Discord.
+                The tool detects this situation and suggests an alternative port: "Port 5001 is already in use by
+                another application. Using 5002 instead." This fallback prevents conflicts by automatically choosing an
+                alternative port. The proxy is then configured to listen on 5002 instead of 5001.</p>
+            <p><strong>Data Point 10: One-Time Setup - Persistence Across Restarts</strong>
+                Firewall rules are persistent - once created, they remain even after the tool is closed or the computer
+                is restarted. This means the user only needs to grant firewall access <strong>once</strong>. Subsequent
+                runs of the tool don't need to re-create rules or re-request admin elevation. This improves the user
+                experience - the first run involves UAC popups and admin prompts, but subsequent runs are clean and
+                quick. The tool checks if rules already exist before trying to create them, so it's idempotent (running
+                it multiple times has the same effect as running it once).</p>
+            <hr />
+            <h2 id="section-7-the-logging-privacy-system">SECTION 7: THE LOGGING &amp; PRIVACY SYSTEM</h2>
+            <h3 id="feature-privacy-first-debug-logging-automatic-data-sanitization">Feature: Privacy-First Debug
+                Logging - Automatic Data Sanitization</h3>
+            <p><strong>Data Point 1: Purpose - Transparent Troubleshooting Without Privacy Invasion</strong>
+                As the tool runs, it generates debug logs containing detailed information about every action: "Opened
+                file C:\Users\JohnDoe\Documents\Skyrim.ini", "Connecting to Ollama at localhost:11434", "Scanned folder
+                D:\Games..." These logs are invaluable for debugging when users report problems. However, logs also
+                contain sensitive information: usernames, full file paths, computer names, etc. If a user shares a log
+                for debugging, they're potentially exposing personal information. The Privacy Sanitizer automatically
+                scrubs this information, replacing "JohnDoe" with "%USER%" throughout the log. This allows sharing logs
+                safely.</p>
+            <p><strong>Data Point 2: The Sanitizer Function - String Replacement at Scale</strong>
+                The <code>sanitize()</code> function in <code>utils/privacy.py</code> takes any string and returns a
+                sanitized version. It performs two replacements: (1) Full path sanitization:
+                "C:\Users\JohnDoe\Documents" becomes "C:\Users\%USER%\Documents", (2) Username sanitization: any
+                occurrence of "JohnDoe" becomes "%USER%". The function uses regex pattern matching
+                (<code>re.compile(re.escape(username), re.IGNORECASE)</code>) to find the username case-insensitively
+                and replace all occurrences. This is done on every single log message before it's written.</p>
+            <p><strong>Data Point 3: Recursive Sanitization - Nested Data Structures</strong>
+                Sometimes, log messages contain complex data: dictionaries, lists, or tuples. The sanitizer recursively
+                sanitizes these structures. If a dictionary contains strings, the sanitizer recurses into the
+                dictionary, sanitizes each string value, and returns the sanitized dictionary. This works on arbitrarily
+                nested structures. For example, a dictionary like <code>{"path": "C:\Users\JohnDoe\..."}</code> becomes
+                <code>{"path": "C:\Users\%USER%\..."}</code>. The recursion is transparent to the caller.
+            </p>
+            <p><strong>Data Point 4: Case-Insensitive Username Matching</strong>
+                Windows usernames are case-insensitive, but the tool's username detection uses
+                <code>getpass.getuser()</code>, which returns the username in whatever case the OS provides. If the
+                user's username is "JohnDoe" but a log message mentions "johndoe" or "JOHNDOE", the simple string
+                replacement would miss it. To handle this, the sanitizer uses case-insensitive regex:
+                <code>re.IGNORECASE</code>. This flag makes the regex matcher case-insensitive, so "JohnDoe", "johndoe",
+                and "JOHNDOE" all match and get replaced.
+            </p>
+            <p><strong>Data Point 5: Log File Creation - Persistent Storage</strong>
+                The tool writes logs to a file called <code>h4_omni_debug.log</code> located next to the executable (for
+                frozen EXE) or in the project root (for development). The log file is created automatically by Python's
+                logging module using <code>logging.FileHandler(LOG_FILE)</code>. The file is opened in write mode ('w'),
+                which truncates it on each run (only the latest run's logs are kept). To preserve historical logs, the
+                user can manually copy the file before running the tool again. This simple approach avoids log file
+                bloat while preserving recent history.</p>
+            <p><strong>Data Point 6: Dual-Output Logging - Console and File Simultaneously</strong>
+                The tool logs to two places simultaneously: (1) <strong>File Handler</strong>: Writes to
+                <code>h4_omni_debug.log</code> on disk, (2) <strong>Console Handler</strong>: Writes to stdout (visible
+                in the Python console or command prompt). This dual-output allows developers to see logs in real-time
+                (console) and preserve them for later analysis (file). Both outputs go through the same
+                <code>PrivacyFormatter</code>, ensuring consistent sanitization. If either output fails (e.g., the file
+                is locked), the other still works.
+            </p>
+            <p><strong>Data Point 7: PrivacyFormatter - Custom Formatter Integration</strong>
+                Logging in Python is layered: loggers create messages, formatters format those messages, and handlers
+                output them. The tool uses a custom formatter called <code>PrivacyFormatter</code> that inherits from
+                <code>logging.Formatter</code>. This formatter intercepts every log record <strong>before</strong> it's
+                written and applies sanitization: <code>record.msg = sanitize(record.msg)</code>. This ensures every
+                message, regardless of handler, is sanitized. The formatter is applied to both file and console
+                handlers, so sanitization is consistent.
+            </p>
+            <p><strong>Data Point 8: Environment-Aware Path Resolution</strong>
+                The tool detects whether it's running as a frozen executable (using PyInstaller) or as raw Python code.
+                For frozen executables, <code>hasattr(sys, 'frozen')</code> is True, and the log is written next to the
+                executable: <code>BASE_DIR = os.path.dirname(sys.executable)</code>. For development (raw Python), the
+                log is written to the project root:
+                <code>BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))</code>. This ensures the
+                log ends up in a sensible location regardless of how the tool is run.
+            </p>
+            <p><strong>Data Point 9: Error Handling - Graceful Degradation if Logging Fails</strong>
+                If creating the log file fails (e.g., the directory is read-only or disk is full), the tool doesn't
+                crash. Instead, <code>logging.FileHandler</code> throws an exception, which is caught:
+                <code>except Exception as e: # Log error, but continue</code>. The tool displays a message to the user
+                (via Windows MessageBox if running as EXE) but continues executing. The console output still works even
+                if file logging fails. This is resilience - the tool doesn't depend on logging to function.
+            </p>
+            <p><strong>Data Point 10: Log Level Control - Configurable Verbosity</strong>
+                The logger is always set to <code>logging.DEBUG</code>, which is the most verbose level. Every single
+                action is logged, from "Checking for Windows admin privileges" to "Parsed JSON response (234 bytes)".
+                This verbosity is intentional - when debugging issues, detailed logs are invaluable. In a production
+                application, you'd typically use <code>logging.INFO</code> (less verbose) or
+                <code>logging.WARNING</code> (only warnings and errors), but this tool prioritizes troubleshooting over
+                noise reduction. Users can filter the log file for relevant messages if they find it too verbose.
+            </p>
+            <hr />
+            <h2 id="section-8-the-user-interface-components-interactions">SECTION 8: THE USER INTERFACE COMPONENTS &amp;
+                INTERACTIONS</h2>
+            <h3 id="feature-the-dashboard-real-time-system-status-display">Feature: The Dashboard - Real-Time System
+                Status Display</h3>
+            <p><strong>Data Point 1: Purpose - Single-Pane Situational Awareness</strong>
+                The Dashboard is the "mission control" interface - a single screen showing the complete system state.
+                The user can see: what game is targeted, which mod paths are found, whether Ollama is running, what AI
+                model is selected, what the proxy status is, and real-time log output. Instead of clicking through
+                multiple screens, the user sees everything at once. This is intentional design - the tool prioritizes
+                information density and reduced navigation. The Dashboard is the main view after the initial setup
+                wizard.</p>
+            <p><strong>Data Point 2: Component Status Grid - Visual Health Indicators</strong>
+                The Dashboard displays a list of components (Mantella.exe, xVASynth.exe, Ollama.exe, PapyrusUtil.dll,
+                UIExtensions.esp, etc.), each with a visual indicator: ✔ (found, green), ✗ (missing, red), or ⚠
+                (conflict, yellow). The user can immediately see which components are present and which are missing.
+                Missing components prevent launch - the game can't start without them. The status grid is clickable -
+                clicking a component opens a manager dialog allowing the user to manually browse for the file, switch to
+                an alternate location, or open the folder.</p>
+            <p><strong>Data Point 3: Action Buttons - The Three Core Operations</strong>
+                Three large buttons dominate the Dashboard:
+                - <strong>SCAN</strong>: Initiates the Hunter Protocol, re-scanning the entire system for components.
+                Takes 5-20 minutes.
+                - <strong>FIX CONFIGURATION</strong>: Applies INI patches, creates firewall rules, generates
+                Mantella.ini, and verifies the setup. Takes 1-2 minutes.
+                - <strong>ACTIVATE SERVICES</strong>: Starts Ollama, confirms model availability, and starts the proxy
+                server. Takes 30 seconds to 10 minutes (depending on cold start).
+                Each button runs a sequence of operations on a background thread, updating the log display in real-time.
+            </p>
+            <p><strong>Data Point 4: Status Indicators - Live Service Monitoring</strong>
+                Below the action buttons, live status indicators show:
+                - "Ollama Service: [Running / Offline]"
+                - "Proxy Server: [Running / Offline]"
+                - "Game Detected: [Yes / No]"
+                - "Config Status: [Valid / Needs Repair]"
+                These are updated every 2 seconds by a background thread checking system state. The colors change based
+                on status: green for success, red for failure, yellow for warnings. If Ollama is running but the model
+                is loading (the "cold start"), the indicator shows "Warming Up". This real-time feedback keeps the user
+                informed without requiring constant manual checks.</p>
+            <p><strong>Data Point 5: Theme Cycling - Aesthetic Customization</strong>
+                Clicking the signature "(b ' . ' )b - h4" text in the log footer cycles the UI color scheme through 7
+                options: Cyber Green, Electric Blue, Cyberpunk Pink, Industrial Orange, Crimson Red, Deep Purple, and
+                Hazard Yellow. This isn't just cosmetic - it demonstrates that the entire UI is CSS-like and themeable.
+                The theme change is instant (no restart required), affecting buttons, borders, text colors, and accents
+                throughout the interface. This easter egg allows users to personalize the tool and makes the interface
+                feel less sterile.</p>
+            <p><strong>Data Point 6: Debug Mode - Enhanced Logging and Visibility</strong>
+                The Dashboard has a "Debug Mode" toggle button. When enabled, the logger writes to a file in extremely
+                verbose mode, showing every single interaction between the tool and the system. Debug mode also displays
+                a "[DEBUG MODE]" indicator in the title bar (in magenta) and shows additional diagnostic information in
+                the UI. When a user encounters a problem, enabling debug mode and then re-running the problematic
+                operation generates logs that developers can use to troubleshoot. The debug logs include timestamps,
+                thread IDs, and full exception stack traces.</p>
+            <p><strong>Data Point 7: Real-Time Log Searching - Finding Needles in the Haystack</strong>
+                The log display includes a search bar. The user types keywords ("Ollama", "Port", "Error", etc.), and
+                matching lines are highlighted in yellow. The search is case-insensitive and regex-capable (users can
+                search for patterns like "Error: .*"). This is implemented using Tkinter's <code>.tag_find()</code>
+                method which locates substrings and applies a "highlight" tag. The search is instant - as the user
+                types, the highlighting updates in real-time. This makes it easy to find specific information in a
+                500-line log.</p>
+            <p><strong>Data Point 8: Mod Manager Integration - Detecting MO2 and Vortex</strong>
+                If the tool detects that the user is using Mod Organizer 2 (MO2) or Vortex (mod managers), it displays
+                buttons to launch them directly: "[MO2]" and "[Vortex]". These are convenience buttons - the user can
+                jump from the Omni-Tool to their mod manager without opening File Explorer manually. The tool detects
+                mod managers by looking for their executables in the scan results. If MO2 is found, the button is
+                enabled; if not, it's grayed out. This is a small UX touch that saves users 5 seconds each time they
+                need to switch tools.</p>
+            <p><strong>Data Point 9: Game Launcher Integration - Direct Game Launch</strong>
+                The Dashboard can automatically launch the game for the user. There's a big "[LAUNCH GAME]" button that:
+                (1) confirms Ollama is running, (2) starts the proxy server, (3) launches the game executable
+                (SkyrimSE.exe, Fallout4.exe, etc.) with the correct working directory and arguments, (4) monitors the
+                game process and alerts the user if it crashes. This all-in-one flow is much faster than the user
+                manually launching the game from Steam or a shortcut.</p>
+            <p><strong>Data Point 10: Export Logs Function - Safe Sharing for Debugging</strong>
+                A button labeled "Export Debug Log" saves a sanitized copy of the current log to a text file that the
+                user can upload to a forum or email to developers. The export process: (1) reads the entire log from the
+                text widget, (2) re-sanitizes it to remove any PII that might have slipped through, (3) appends system
+                info (OS version, RAM, GPU, etc.), (4) saves to a timestamped file like
+                <code>debug_export_2025-12-26-1053.txt</code>. This makes it trivial for users to share logs for
+                debugging while protecting their privacy.
+            </p>
+            <hr />
+            <h2 id="section-9-advanced-features-system-integration">SECTION 9: ADVANCED FEATURES &amp; SYSTEM
+                INTEGRATION</h2>
+            <h3 id="feature-the-papyrus-script-injection-system-game-level-modifications">Feature: The Papyrus Script
+                Injection System - Game-Level Modifications</h3>
+            <p><strong>Data Point 1: What is Papyrus - The Game Scripting Language</strong>
+                Skyrim and Fallout use a scripting language called "Papyrus" for game logic. Scripts are compiled into
+                binary <code>.pex</code> files that the game loads at startup. The Mantella mod is partially written in
+                Papyrus - it listens for NPC dialogue events and requests AI responses. The Omni-Tool includes compiled
+                Papyrus scripts that extend Mantella's behavior. These scripts live in <code>assets/</code> and are
+                copied to the game's Data/Scripts/ folder as part of installation. The tool doesn't recompile Papyrus
+                (that requires the compiler, which is complex); it just copies pre-compiled <code>.pex</code> files.</p>
+            <p><strong>Data Point 2: Script Injection Workflow - Adding Logic to the Game</strong>
+                The <code>safe_injector.py</code> module handles script injection. The workflow: (1) locate the game's
+                Data/Scripts/Source/ directory, (2) identify which Papyrus source files need to be injected (like
+                <code>MantellaAction_OffendForgiveFollow.psc</code>), (3) read the source file, (4) apply any necessary
+                modifications (like replacing placeholders), (5) compile the script (if possible, or copy pre-compiled
+                .pex), (6) place the compiled binary in the correct location. This is safe because the tool doesn't
+                modify existing game scripts - it only adds new ones.
+            </p>
+            <p><strong>Data Point 3: Template-Based Injection - Placeholder Substitution</strong>
+                Some scripts are templates with placeholders. For example, a script might contain:</p>
+            <pre><code>PROXY_URL = &quot;{proxy_url}&quot;
+GAME_PORT = {game_port}
+</code></pre>
+            <p>The injector replaces <code>{proxy_url}</code> with the actual proxy URL (e.g., "http://localhost:5001")
+                and <code>{game_port}</code> with the actual port (e.g., "5001"). This is done using Python's
+                <code>.format()</code> method or simple string <code>.replace()</code>. The substitution happens before
+                the script is copied to the game folder, ensuring the game loads the correct configuration at startup.
+                Template-based injection is safer than direct code generation because the template is pre-tested.
+            </p>
+            <p><strong>Data Point 4: Dependency Checking - Ensuring Required Scripts Exist</strong>
+                Before injecting scripts, the tool checks that all required dependencies are present. For example,
+                PapyrusUtil is a utility library that many scripts depend on. If PapyrusUtil is not installed, injecting
+                scripts that rely on it will fail at game load (the game will report "Unknown function" errors). The
+                tool checks for these dependencies early:
+                <code>if "PapyrusUtil" not in TARGETS["PapyrusUtil"]["found"]: alert("PapyrusUtil is required")</code>.
+                This prevents silent failures - the tool catches missing dependencies before attempting injection.
+            </p>
+            <p><strong>Data Point 5: Compilation - Building Optimized Scripts</strong>
+                If Papyrus source files need to be compiled (.psc -&gt; .pex), the tool attempts to invoke the Papyrus
+                compiler: <code>subprocess.call([compiler_path, source_file, "-output=&lt;path&gt;"])</code>. The
+                compiler is part of the Skyrim SDK (Software Development Kit), which many modders have installed. If the
+                compiler is available, the tool uses it. If not, the tool uses pre-compiled <code>.pex</code> files
+                bundled with the distribution. Pre-compiled is the fallback - it's less customizable but always works.
+                The tool doesn't fail if compilation isn't available; it just uses the fallback.</p>
+            <p><strong>Data Point 6: Backup Before Injection - Disaster Recovery for Scripts</strong>
+                Before injecting scripts, the tool creates backups of any existing scripts with the same name. If a
+                script called <code>MantellaAction.pex</code> already exists, it's renamed to
+                <code>MantellaAction.pex.backup</code>. This allows reverting to the original if something goes wrong.
+                Backups are timestamped and preserved indefinitely (the user must delete them manually). This is the
+                same backup strategy used for INI files - it's defensive programming that prevents data loss.
+            </p>
+            <p><strong>Data Point 7: Script Load Order Management - Ensuring Correct Initialization</strong>
+                Papyrus scripts are loaded in a specific order determined by the mod load order. If a Mantella script
+                depends on another mod's script, it must be loaded after that mod. The tool checks the load order and
+                warns if there's a potential conflict: "Warning: Mantella script depends on SkyUI, but SkyUI is loaded
+                after Mantella in the mod order." This doesn't prevent loading (the game will still try), but it alerts
+                the user to a potential issue. Fixing load order requires the user to use their mod manager (MO2 or
+                Vortex) to reorder mods, which is beyond the tool's scope.</p>
+            <p><strong>Data Point 8: Runtime Verification - Testing Scripts After Injection</strong>
+                Once scripts are injected, the tool can't directly verify they work (it would need to launch the game
+                and wait). But it can perform indirect verification: (1) check that the <code>.pex</code> files exist in
+                the correct location, (2) read file metadata (size, timestamp) to ensure they're correct, (3) parse the
+                <code>.pex</code> binary header to confirm it's a valid compiled script. This verification doesn't
+                guarantee the scripts work, but it catches obvious failures (wrong file type, corrupted file, missing
+                file). The tool logs the verification results so users can confirm everything is in place.
+            </p>
+            <p><strong>Data Point 9: Rollback Capability - Undoing Injection if Needed</strong>
+                If the user wants to remove the injected scripts, they can use the "Rollback" function. This restores
+                scripts from backups, removing any files added by the tool. The rollback is thorough: it removes each
+                injected file and restores its backup counterpart if one exists. This allows users to cleanly uninstall
+                the Omni-Tool's modifications and revert to the original game state. Rollback is idempotent - running it
+                multiple times has the same effect as running it once.</p>
+            <p><strong>Data Point 10: Audit Trail - Logging Every Modification</strong>
+                Every script modification is logged: "[INJECTOR] Injected MantellaAction.pex to Data/Scripts/",
+                "[INJECTOR] Compiled MantellaAction.psc (output: data/scripts/manutellaaction.pex)", "[INJECTOR] Applied
+                template substitution: PROXY_URL = http://localhost:5001". This audit trail is invaluable for debugging:
+                if scripts aren't loading, developers can check the log to see if injection succeeded, compilation
+                succeeded, file placement succeeded, etc. The log preserves the exact file paths and command-line
+                arguments used, allowing exact reproduction of the injection process.</p>
+            <hr />
+            <h2 id="section-10-deployment-troubleshooting-future-roadmap">SECTION 10: DEPLOYMENT, TROUBLESHOOTING &amp;
+                FUTURE ROADMAP</h2>
+            <h3 id="feature-pyinstaller-deployment-converting-python-to-executable">Feature: PyInstaller Deployment -
+                Converting Python to Executable</h3>
+            <p><strong>Data Point 1: Why Freezing is Necessary - User Experience</strong>
+                The tool is written in Python, but users don't have Python installed (nor should they need to). Python
+                is for developers. So the tool must be converted from Python source code into a standalone Windows
+                executable (.exe) that users can double-click and run. This conversion process is called "freezing" or
+                "bundling". PyInstaller is the tool that does this - it reads the Python source, bundles the Python
+                runtime, all imported libraries, and all asset files into a single .exe. The result is a 50-60MB
+                executable that contains everything needed to run the tool.</p>
+            <p><strong>Data Point 2: The Build Process - Transforming Source to Binary</strong>
+                The build process uses a spec file (<code>h4_Mantella_Omni_Tool.spec</code>) that defines how
+                PyInstaller should bundle the app: which entry point to use (<code>main.py</code>), which libraries to
+                include, which files to bundle as assets (<code>icon.ico</code>, <code>logo.png</code>,
+                <code>README.md</code>), and what the output structure should be. PyInstaller reads this spec and: (1)
+                analyzes the Python code to identify all imports, (2) copies the Python runtime into a temporary
+                directory, (3) copies all imported libraries (customtkinter, requests, pillow, etc.), (4) copies asset
+                files, (5) bundles everything into a single .exe using UPX compression, (6) tests the executable, (7)
+                outputs the final .exe and supporting files to a <code>dist/</code> folder.
+            </p>
+            <p><strong>Data Point 3: Hidden Imports - Manually Declaring Dependencies</strong>
+                PyInstaller uses static analysis to find imports - it reads the source code and finds
+                <code>import customtkinter</code>. But some imports are dynamic:
+                <code>importlib.import_module("requests")</code>. PyInstaller can't detect dynamic imports through
+                static analysis, so it misses them. The spec file includes a "hiddenimports" list that manually declares
+                these missed imports: <code>hiddenimports=['pywin32', 'PIL']</code>. Without this, the frozen executable
+                would run but crash when it tries to import a missing library. The spec file is hand-curated to include
+                all known hidden imports based on the codebase.
+            </p>
+            <p><strong>Data Point 4: Asset Bundling - Including Non-Python Files</strong>
+                The tool includes non-Python files: <code>assets/logo.png</code>, <code>assets/icon.ico</code>,
+                <code>assets/README.md</code>, <code>assets/codex.html</code>, etc. These files aren't Python code, so
+                PyInstaller doesn't automatically bundle them. The spec file declares them in the <code>datas</code>
+                section: <code>datas=[('assets/', 'assets/')]</code>. This tells PyInstaller "copy everything in the
+                local assets/ folder into assets/ in the frozen executable". When the frozen executable runs, it can
+                locate these assets using the same paths as the source code, because the directory structure is
+                preserved.
+            </p>
+            <p><strong>Data Point 5: Code Obfuscation - Protecting Intellectual Property</strong>
+                PyInstaller can optionally obfuscate the bundled Python code, making it harder to reverse-engineer.
+                However, the Omni-Tool doesn't use obfuscation - the codebase is designed to be readable and modifiable.
+                The developers decided transparency and auditability (users can inspect the code if they trust the tool)
+                are more important than hiding implementation details. This is a philosophical choice - closed-source
+                tools use obfuscation, open-source tools don't. The tool's source code is available on GitHub, so
+                obfuscation would be pointless anyway.</p>
+            <p><strong>Data Point 6: Size Optimization - 50MB vs. 200MB</strong>
+                PyInstaller bundles the entire Python runtime (~25MB) plus all libraries (~15MB) plus the app code
+                (~1MB) plus assets (~5MB). The raw size is ~46MB. UPX compression (optional) can reduce this to ~15MB,
+                but it slows down startup time (the app must decompress before running). The tool uses minimal
+                compression - it targets ~50MB because the time cost of decompression on startup (2-3 seconds) is
+                considered unacceptable. Users are willing to download 50MB for a faster startup.</p>
+            <p><strong>Data Point 7: Signing and Verification - Proving Authenticity</strong>
+                Ideally, the .exe would be digitally signed (using a code-signing certificate) to prove the tool came
+                from a trusted source. This would prevent Windows SmartScreen from showing "Unknown Developer" warnings.
+                However, code-signing certificates cost $300+/year and require company identity verification. The
+                Omni-Tool is developed by an individual, so signing is impractical. Users downloading the .exe see a
+                warning. This is a limitation of the free/hobby distribution model - commercial tools are signed, hobby
+                tools typically aren't.</p>
+            <p><strong>Data Point 8: Anti-Virus False Positives - Dealing with Security Suspicion</strong>
+                Because the frozen .exe uses PyInstaller (which itself is sometimes flagged as suspicious by anti-virus
+                software) and contains network/file manipulation code, some anti-virus products flag it as potentially
+                malicious. This is a false positive - the tool is benign - but it scares users. To mitigate: (1) the
+                tool is open-source (users can inspect the code), (2) it's hosted on GitHub (GitHub does basic security
+                scans), (3) it's documented extensively (a malicious tool wouldn't be documented so thoroughly). Users
+                who don't trust the distributed .exe can download the Python source and run it directly using
+                <code>python main.py</code>.
+            </p>
+            <p><strong>Data Point 9: Update Mechanism - Keeping Users Current</strong>
+                Once deployed, how do users get updates? The tool could check GitHub for new versions, but that adds
+                complexity. For now, updates are manual - users download a new .exe from the GitHub release page. Future
+                versions could include an auto-updater that checks GitHub, downloads the latest .exe, and automatically
+                runs the installer. But auto-updaters introduce their own security risks (they need elevated privileges
+                to write files), so this is left as future work.</p>
+            <p><strong>Data Point 10: Regression Testing - Ensuring Freezing Works</strong>
+                Before each release, PyInstaller compiles the executable and the developers test it on multiple
+                machines: Windows 10, Windows 11, with different hardware (GPU, RAM), and with different game
+                configurations. They verify: (1) the .exe launches without errors, (2) basic features work (scanning,
+                configuration, service startup), (3) the UI displays correctly, (4) logs are generated, (5) temp files
+                are cleaned up. This regression testing is automated using a CI/CD pipeline (GitHub Actions) that runs
+                tests on every code commit. Any breaking changes are caught immediately.</p>
+            <hr />
+            <h2 id="conclusion-your-complete-reference">CONCLUSION - YOUR COMPLETE REFERENCE</h2>
+            <p>You now have a comprehensive understanding of every major component of the h4 Mantella Omni-Tool v6.6.
+                Each section presented 10 detailed data points explaining:
+                - <strong>What the feature does</strong> (purpose)
+                - <strong>How it works</strong> (mechanism)
+                - <strong>Why it's implemented this way</strong> (design philosophy)
+                - <strong>How it interacts with other parts</strong> (integration points)
+                - <strong>What can go wrong</strong> (failure modes)
+                - <strong>How failures are handled</strong> (resilience)
+                - <strong>How users interact with it</strong> (UX)
+                - <strong>How developers maintain it</strong> (code organization)
+                - <strong>Future improvements</strong> (roadmap considerations)
+                - <strong>Real-world examples</strong> (practical scenarios)</p>
+            <p>This whitepaper is structured so that someone with zero programming experience can read it, understand
+                the complete system architecture, and explain each feature to others. The explanations use everyday
+                analogies (surgical operation, frame stacking, template substitution, audit trails) rather than assuming
+                prior knowledge.</p>
+            <p><strong>Key Takeaways:</strong>
+                1. The tool solves a real problem: making Mantella mod installation trivial for non-technical users
+                2. Every design decision prioritizes user safety: backups, rollback, gradual failure, transparent
+                logging
+                3. The codebase is intentionally readable and modifiable, respecting user autonomy
+                4. Threading and queue-based architecture prevent UI freezing during long operations
+                5. Privacy is built-in, not bolted-on - sanitization happens automatically
+                6. Resilience is paramount - the tool degrades gracefully rather than crashing</p>
+            <p><strong>For Further Learning:</strong>
+                - Read the source code on GitHub: each file is well-commented
+                - Review the README.md for user-facing documentation
+                - Examine the debug logs to see the tool in action
+                - Modify the theme colors to understand how customization works</p>
+            <p>This tool represents several months of thoughtful development aimed at making cutting-edge AI NPC
+                dialogue accessible to ordinary gamers. Every feature, from the simple progress bar to the complex proxy
+                interceptor, serves that mission.</p>
+            <hr />
+            <p><strong>Document Version</strong>: 1.0<br />
+                <strong>Last Updated</strong>: December 26, 2025<br />
+                <strong>Audience</strong>: Non-technical stakeholders, students, future maintainers<br />
+                <strong>Total Word Count</strong>: ~12,000 words<br />
+                <strong>Sections</strong>: 10 major sections, 40 detailed features, 400 data points<br />
+                <strong>Complexity Level</strong>: Beginner-friendly with technical depth
+            </p>
+
+            <div class="mt-8 pt-6 border-t border-slate-700 text-center">
+                <a href="https://github.com/m3rr/MantellaOmniTool" target="_blank"
+                    class="inline-flex items-center text-cyan-500 hover:text-cyan-400 font-bold transition-colors no-underline">
+                    <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                        <path
+                            d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+                    </svg>
+                    ACCESS SOURCE REPOSITORY >
+                </a>
+            </div>
+        </div>
+        <!-- WHITEPAPER END -->
+    </template>`
+    }
+    ]; // Close CONTENT array
+
+    // --- RENDER LOGIC ---
+    const navContainer = document.getElementById('nav-items');
+    const mainContent = document.getElementById('main-content');
+
+    function renderNav() {
+    if (!navContainer) return;
+    navContainer.innerHTML = '';
+    CONTENT.forEach(item => {
+    const el = document.createElement('div');
+    el.className = 'nav-item';
+    el.setAttribute('data-id', item.id);
+    el.innerHTML = `
+    <div class="nav-icon text-cyan-500">${item.icon}</div>
+    <div class="flex-1 min-w-0">
+        <div class="nav-title text-slate-200 font-bold truncate">${item.title}</div>
+        <div class="nav-subtitle text-slate-500 text-xs truncate">${item.subtitle}</div>
+    </div>
+    `;
+    el.onclick = () => renderSection(item.id);
+    navContainer.appendChild(el);
+    });
+    }
+
+    function renderSection(id) {
+    const data = CONTENT.find(c => c.id === id);
+    if (!data) return;
+
+    // Highlight active nav
+    document.querySelectorAll('.nav-item').forEach(el => {
+    if (el.getAttribute('data-id') === id) el.classList.add('active');
+    else el.classList.remove('active');
+    });
+
+    // Render Content
+    if (mainContent) {
+    mainContent.innerHTML = `
+    <div class="animate-fade-in">
+        <div class="flex items-center gap-4 mb-8 pb-4 border-b border-gray-800">
+            <div class="p-3 bg-slate-800 rounded-lg text-cyan-400">
+                ${data.icon}
+            </div>
+            <div>
+                <h1
+                    class="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-500 font-mono">
+                    ${data.title}
+                </h1>
+                <div class="text-gray-400 mt-1 font-mono text-sm">
+                    // ${data.subtitle.toUpperCase()}
+                </div>
+            </div>
+        </div>
+        <div class="whitepaper-content prose prose-invert max-w-none">
+            ${data.html}
+        </div>
+    </div>
+    `;
+    mainContent.scrollTop = 0;
+    }
+    }
+
+    // --- INIT ---
+    // Delay init slightly to ensure DOM is ready (though script is at bottom)
+    setTimeout(() => {
+    renderNav();
+    renderSection('INIT');
+    }, 50);
+
+    </script>
+</body>
+
+</html>
